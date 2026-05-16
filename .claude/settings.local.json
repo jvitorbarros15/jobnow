@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(corepack enable *)",
+      "Bash(pnpm run *)"
+    ]
+  }
+}

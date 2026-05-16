@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-instrument-serif: var(--font-instrument-serif);
+    --font-jetbrains-mono: var(--font-jetbrains-mono);
+  }
+
+  body {
+    background-color: #0a0a0f;
+    color: white;
+    font-family: var(--font-geist-sans);
+  }
+}
