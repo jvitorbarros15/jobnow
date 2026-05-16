@@ -1,0 +1,60 @@
+import { createServerClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url)
+  const code = requestUrl.searchParams.get('code')
+  const error = requestUrl.searchParams.get('error')
+  const errorDescription = requestUrl.searchParams.get('error_description')
+
+  if (error) {
+    const message = errorDescription || error
+    return redirect(`/login?error=${encodeURIComponent(message)}`)
+  }
+
+  if (!code) {
+    return redirect('/login?error=No authorization code received')
+  }
+
+  try {
+    const supabase = await createServerClient()
+
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (exchangeError) {
+      console.error('Session exchange error:', exchangeError)
+      return redirect(`/login?error=${encodeURIComponent(exchangeError.message)}`)
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      console.error('Get user error:', userError)
+      return redirect('/login?error=Failed to get user information')
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error('Profile fetch error:', profileError)
+      return redirect('/login?error=Failed to fetch profile')
+    }
+
+    if (!profile) {
+      return redirect('/onboarding')
+    }
+
+    return redirect('/tracker')
+  } catch (error) {
+    console.error('Callback error:', error)
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
+    return redirect(`/login?error=${encodeURIComponent(message)}`)
+  }
+}

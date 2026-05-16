@@ -3,7 +3,8 @@
     "allow": [
       "PowerShell(corepack enable *)",
       "Bash(pnpm run *)",
-      "Bash(Get-ChildItem *)"
+      "Bash(Get-ChildItem *)",
+      "Bash(npx next *)"
     ]
   }
 }
