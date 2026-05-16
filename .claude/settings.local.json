@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "PowerShell(corepack enable *)",
-      "Bash(pnpm run *)"
+      "Bash(pnpm run *)",
+      "Bash(Get-ChildItem *)"
     ]
   }
 }
