@@ -46,7 +46,7 @@ export default function ProfileStep({ user, onNext }: ProfileStepProps) {
         .from('profiles')
         .upsert({
           id: user.id,
-          name: name.trim(),
+          full_name: name.trim(),
           email: user.email,
           phone: phone.trim(),
           location: location.trim(),
