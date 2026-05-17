@@ -2,6 +2,8 @@ export interface NewsArticle {
   title: string
   url: string
   source: 'NewsAPI' | 'HackerNews' | 'CryptoPanic'
+  publishedAt: string
+  snippet?: string
 }
 
 export interface PostVariant {
