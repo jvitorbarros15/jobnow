@@ -6,6 +6,8 @@ create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text not null,
   full_name text,
+  phone text,
+  location text,
   gmail_access_token text,       -- encrypted, refreshed via OAuth
   gmail_refresh_token text,
   gmail_token_expiry timestamptz,
