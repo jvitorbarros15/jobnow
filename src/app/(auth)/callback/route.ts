@@ -1,5 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -9,11 +9,11 @@ export async function GET(request: Request) {
 
   if (error) {
     const message = errorDescription || error
-    return redirect(`/login?error=${encodeURIComponent(message)}`)
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(message)}`, requestUrl))
   }
 
   if (!code) {
-    return redirect('/login?error=No authorization code received')
+    return NextResponse.redirect(new URL('/login?error=No authorization code received', requestUrl))
   }
 
   try {
@@ -23,7 +23,9 @@ export async function GET(request: Request) {
 
     if (exchangeError) {
       console.error('Session exchange error:', exchangeError)
-      return redirect(`/login?error=${encodeURIComponent(exchangeError.message)}`)
+      return NextResponse.redirect(
+        new URL(`/login?error=${encodeURIComponent(exchangeError.message)}`, requestUrl)
+      )
     }
 
     const {
@@ -33,7 +35,7 @@ export async function GET(request: Request) {
 
     if (userError || !user) {
       console.error('Get user error:', userError)
-      return redirect('/login?error=Failed to get user information')
+      return NextResponse.redirect(new URL('/login?error=Failed to get user information', requestUrl))
     }
 
     const { data: profile, error: profileError } = await supabase
@@ -44,17 +46,17 @@ export async function GET(request: Request) {
 
     if (profileError && profileError.code !== 'PGRST116') {
       console.error('Profile fetch error:', profileError)
-      return redirect('/login?error=Failed to fetch profile')
+      return NextResponse.redirect(new URL('/login?error=Failed to fetch profile', requestUrl))
     }
 
     if (!profile) {
-      return redirect('/onboarding')
+      return NextResponse.redirect(new URL('/onboarding', requestUrl))
     }
 
-    return redirect('/tracker')
+    return NextResponse.redirect(new URL('/tracker', requestUrl))
   } catch (error) {
     console.error('Callback error:', error)
     const message = error instanceof Error ? error.message : 'An unexpected error occurred'
-    return redirect(`/login?error=${encodeURIComponent(message)}`)
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(message)}`, requestUrl))
   }
 }
