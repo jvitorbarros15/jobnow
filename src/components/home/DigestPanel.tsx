@@ -20,34 +20,50 @@ export default function DigestPanel({ label, type, digests }: DigestPanelProps) 
   const [openIndex, setOpenIndex] = useState<number>(digests.length > 0 ? 0 : -1)
 
   const accentClass = type === 'email' ? 'text-accent' : 'text-green'
-  const labelText   = type === 'email' ? 'Email' : 'News + Drafts'
+  const accentBg = type === 'email' ? 'bg-amber-50/30' : 'bg-green-50/30'
+  const accentBorder = type === 'email' ? 'border-accent/20' : 'border-green/20'
+  const labelText = type === 'email' ? 'Email' : 'News + Drafts'
 
   const toggle = (i: number) => setOpenIndex(i === openIndex ? -1 : i)
 
   return (
-    <div>
-      <p className="text-[10px] font-sans uppercase tracking-widest text-muted font-medium mb-3">
-        {label}
-      </p>
+    <div className="h-full">
+      <div className="mb-4 pb-4 border-b border-border">
+        <p className={`text-[10px] font-sans uppercase tracking-widest font-semibold mb-1 ${accentClass}`}>
+          {label}
+        </p>
+        <p className="text-xs text-muted font-mono">
+          {type === 'email' ? 'inbox summary' : 'industry updates'}
+        </p>
+      </div>
 
       {digests.length === 0 ? (
-        <p className="font-mono text-xs text-muted">
-          No digests yet — routines run at 08:00 and 16:00 ET
-        </p>
+        <div className={`rounded-lg border ${accentBorder} ${accentBg} p-4`}>
+          <p className="font-mono text-xs text-muted leading-relaxed">
+            No digests yet<br />
+            routines run at 08:00 &amp; 16:00 ET
+          </p>
+        </div>
       ) : (
-        <div className="border-t border-border">
-          {digests.map((d, i) => (
-            <DigestEntry
-              key={d.id}
-              slot={d.slot}
-              date={d.date}
-              content={d.content}
-              open={i === openIndex}
-              onToggle={() => toggle(i)}
-              accentClass={accentClass}
-              labelText={d.slot === 'morning' ? 'Morning' : 'Afternoon'}
-            />
-          ))}
+        <div className={`rounded-lg border ${accentBorder} ${accentBg} overflow-hidden backdrop-blur-sm`}>
+          <div className="divide-y divide-border/50">
+            {digests.map((d, i) => (
+              <div
+                key={d.id}
+                className="transition-colors hover:bg-surface-2/20 group"
+              >
+                <DigestEntry
+                  slot={d.slot}
+                  date={d.date}
+                  content={d.content}
+                  open={i === openIndex}
+                  onToggle={() => toggle(i)}
+                  accentClass={accentClass}
+                  labelText={d.slot === 'morning' ? 'Morning' : 'Afternoon'}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
