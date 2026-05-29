@@ -1,7 +1,5 @@
 'use client'
 
-import { AlertTriangle } from 'lucide-react'
-
 interface KeywordScoreProps {
   score: number
   matched: string[]
@@ -9,54 +7,27 @@ interface KeywordScoreProps {
 }
 
 export default function KeywordScore({ score, matched, missing }: KeywordScoreProps) {
-  const color =
-    score >= 70
-      ? { ring: 'stroke-green-400', text: 'text-green-400' }
-      : score >= 50
-      ? { ring: 'stroke-amber-400', text: 'text-amber-400' }
-      : { ring: 'stroke-red-400', text: 'text-red-400' }
-
-  const circumference = 2 * Math.PI * 28
-  const dash = (score / 100) * circumference
+  const color = score >= 70 ? 'text-green' : score >= 50 ? 'text-accent' : 'text-red'
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <div className="relative w-20 h-20 flex-shrink-0">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 64 64">
-            <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="6" className="text-border" />
-            <circle
-              cx="32"
-              cy="32"
-              r="28"
-              fill="none"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray={`${dash} ${circumference}`}
-              className={color.ring}
-            />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className={`text-lg font-bold ${color.text}`}>{score}%</span>
-          </div>
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-white">ATS Match Score</p>
-          <p className="text-xs text-muted">
-            {matched.length} of {matched.length + missing.length} keywords matched
-          </p>
+    <div className="space-y-4 border-b border-border pb-4">
+      <div className="flex items-baseline gap-3">
+        <span className={`font-display text-[3.5rem] font-bold leading-none tabular-nums ${color}`}>
+          {score}
+        </span>
+        <span className="text-muted text-lg font-mono">%</span>
+        <div className="ml-1">
+          <p className="text-[10px] font-sans uppercase tracking-[0.12em] text-muted">ATS match</p>
+          <p className="text-xs text-muted">{matched.length} of {matched.length + missing.length} keywords</p>
         </div>
       </div>
 
       {matched.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-muted mb-1.5">Matched keywords</p>
+          <p className="text-[9px] font-sans uppercase tracking-[0.15em] text-green mb-2">Matched</p>
           <div className="flex flex-wrap gap-1.5">
             {matched.map((kw) => (
-              <span
-                key={kw}
-                className="px-2 py-0.5 rounded text-xs bg-green-500/15 text-green-400 border border-green-500/25"
-              >
+              <span key={kw} className="text-[10px] font-mono text-green border border-green/25 px-1.5 py-0.5">
                 {kw}
               </span>
             ))}
@@ -66,16 +37,10 @@ export default function KeywordScore({ score, matched, missing }: KeywordScorePr
 
       {missing.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-muted mb-1.5 flex items-center gap-1">
-            <AlertTriangle size={12} className="text-red-400" />
-            Missing skills
-          </p>
+          <p className="text-[9px] font-sans uppercase tracking-[0.15em] text-red mb-2">Missing</p>
           <div className="flex flex-wrap gap-1.5">
             {missing.map((kw) => (
-              <span
-                key={kw}
-                className="px-2 py-0.5 rounded text-xs bg-red-500/15 text-red-400 border border-red-500/25"
-              >
+              <span key={kw} className="text-[10px] font-mono text-red border border-red/25 px-1.5 py-0.5">
                 {kw}
               </span>
             ))}

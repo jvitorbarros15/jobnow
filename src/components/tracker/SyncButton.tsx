@@ -18,14 +18,8 @@ export default function SyncButton({ onSyncComplete, onError, onSyncStart }: Syn
     try {
       const res = await fetch('/api/gmail/sync', { method: 'POST' })
       const data = await res.json()
-      if (!res.ok) {
-        onError(data.error || 'Sync failed')
-        return
-      }
-      onSyncComplete({
-        synced: data.synced ?? 0,
-        calendar_events_created: data.calendar_events_created ?? 0,
-      })
+      if (!res.ok) { onError(data.error || 'Sync failed'); return }
+      onSyncComplete({ synced: data.synced ?? 0, calendar_events_created: data.calendar_events_created ?? 0 })
     } catch {
       onError('Network error — sync failed')
     } finally {
@@ -37,9 +31,9 @@ export default function SyncButton({ onSyncComplete, onError, onSyncStart }: Syn
     <button
       onClick={handleSync}
       disabled={loading}
-      className="px-6 py-3 bg-accent hover:bg-accent/90 hover:shadow-lg hover:shadow-accent/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-white rounded-lg flex items-center gap-2"
+      className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-xs font-semibold font-sans rounded-lg transition-all duration-150 hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {loading ? <Loader2 size={18} className="animate-spin" /> : <Mail size={18} />}
+      {loading ? <Loader2 size={15} className="animate-spin" /> : <Mail size={15} />}
       {loading ? 'Syncing…' : 'Sync Gmail'}
     </button>
   )

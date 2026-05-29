@@ -4,46 +4,36 @@ import { formatDistanceToNow } from 'date-fns'
 import { ExternalLink } from 'lucide-react'
 import type { NewsArticle } from '@/types/posts'
 
-interface NewsCardProps {
-  article: NewsArticle
+const sourceColors: Record<string, string> = {
+  NewsAPI: 'text-[#60a5fa]',
+  HackerNews: 'text-accent',
+  CryptoPanic: 'text-[#c084fc]',
 }
 
-const sourceColors: Record<string, { bg: string; text: string }> = {
-  NewsAPI: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
-  HackerNews: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
-  CryptoPanic: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
-}
-
-export default function NewsCard({ article }: NewsCardProps) {
-  const colors = sourceColors[article.source] || sourceColors.NewsAPI
-  const timeAgo = formatDistanceToNow(new Date(article.publishedAt), {
-    addSuffix: true,
-  })
+export default function NewsCard({ article }: { article: NewsArticle }) {
+  const color = sourceColors[article.source] || 'text-muted'
+  const timeAgo = formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })
 
   return (
     <a
       href={article.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-surface border border-border rounded-lg p-4 hover:border-accent/50 transition-colors group"
+      className="group block border-b border-border py-4 hover:border-accent/40 transition-colors relative pl-3"
     >
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <span
-          className={`text-xs font-semibold px-2 py-1 rounded ${colors.bg} ${colors.text} whitespace-nowrap`}
-        >
+      <span className="absolute left-0 top-0 bottom-0 w-px bg-transparent group-hover:bg-accent transition-colors" />
+      <div className="flex items-center gap-2 mb-2">
+        <span className={`text-[9px] font-mono font-medium uppercase tracking-[0.15em] ${color}`}>
           {article.source}
         </span>
-        <ExternalLink
-          size={16}
-          className="text-muted/50 group-hover:text-accent flex-shrink-0 mt-0.5"
-        />
+        <span className="text-[9px] font-mono text-muted">{timeAgo}</span>
       </div>
-
-      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-accent transition-colors">
-        {article.title}
-      </h3>
-
-      <p className="text-xs text-muted">{timeAgo}</p>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-sm text-[#1c1a18] line-clamp-2 leading-snug group-hover:text-accent transition-colors">
+          {article.title}
+        </h3>
+        <ExternalLink size={12} className="text-muted flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
     </a>
   )
 }

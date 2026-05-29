@@ -4,23 +4,25 @@ import { redirect } from 'next/navigation'
 
 export default async function DashboardLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('gmail_refresh_token')
+    .eq('id', user.id)
+    .single()
+
+  const gmailConnected = !!profile?.gmail_refresh_token
 
   return (
-    <div className="flex h-screen bg-background text-white">
-      <Sidebar userEmail={user.email} />
-      <main className="flex-1 md:ml-64 overflow-auto">
-        <div className="p-4 md:p-6">{children}</div>
+    <div className="flex h-screen bg-background">
+      <Sidebar userEmail={user.email} gmailConnected={gmailConnected} />
+      <main className="flex-1 ml-14 overflow-auto">
+        <div className="p-8">{children}</div>
       </main>
     </div>
   )

@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server'
+import fs from 'fs'
+import path from 'path'
 import { createServerClient } from '@/lib/supabase/server'
 import { anthropic } from '@/lib/anthropic'
 import { extractAtsKeywords } from '@/lib/jobs'
-import { selectResumeSubset, LATEX_BASE_TEMPLATE } from '@/lib/resume'
+import { selectResumeSubset } from '@/lib/resume'
 import type { JobCategory } from '@/types/jobs'
+
+function readDoc(filename: string): string {
+  try {
+    return fs.readFileSync(path.join(process.cwd(), 'docs', filename), 'utf-8')
+  } catch {
+    return ''
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -14,13 +24,34 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { job_description, template, job_id } = body
+    const { job_description, template, job_id, company_name, job_title } = body
 
     if (!job_description) {
       return NextResponse.json({ error: 'job_description is required' }, { status: 400 })
     }
 
-    const keywords = await extractAtsKeywords(job_description)
+    const profileDoc = readDoc('resume-profile.md')
+    const atsDoc = readDoc('ats-seo.md')
+    const builderDoc = readDoc('resume-builder.md')
+
+    const [keywords, visaRes] = await Promise.all([
+      extractAtsKeywords(job_description),
+      anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 150,
+        system: 'Analyze this job description for visa/work authorization requirements. Return ONLY a JSON object: {"visa_warning": boolean, "reason": "short explanation or null"}. Set visa_warning to true if the job: requires US citizenship, requires security clearance, says "no visa sponsorship", says "must be authorized to work without sponsorship", or any similar requirement that would block a visa-dependent applicant.',
+        messages: [{ role: 'user', content: job_description.slice(0, 3000) }],
+      }),
+    ])
+
+    let visa_warning = false
+    let visa_warning_reason: string | null = null
+    try {
+      const visaText = visaRes.content[0].type === 'text' ? visaRes.content[0].text : '{}'
+      const visaJson = JSON.parse(visaText.match(/\{[\s\S]*\}/)?.[0] ?? '{}')
+      visa_warning = visaJson.visa_warning ?? false
+      visa_warning_reason = visaJson.reason ?? null
+    } catch { /* ignore parse errors */ }
 
     const categoryRes = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -34,28 +65,26 @@ export async function POST(request: Request) {
 
     const subset = selectResumeSubset(category, keywords)
 
-    const systemPrompt = `You are a LaTeX resume generator. Generate a tailored 1-page resume for Joao Vitor Barros based on the provided profile subset and job description.
+    const systemPrompt = `You are a professional LaTeX resume generator for Joao Vitor Barros.
 
-HARD RULES — follow every one without exception:
-1. Output must be exactly 1 page when compiled. Cut bullets and drop lower-priority projects if needed. ZorAi and education are never cut.
-2. Output is valid LaTeX only. No markdown, no prose explanation, no preamble — just the LaTeX code starting with \\documentclass.
-3. Active voice in every bullet. Rewrite any passive construction.
-4. Every bullet needs a concrete outcome or metric from the verified metrics list. Do not invent numbers.
-5. No objective or summary section.
-6. Skills section must use ATS keywords from this job. Pick 15-20 skills matching the JD.
-7. No photos, colors, icons, or graphics.
-8. Fonts: Computer Modern (default LaTeX). No fontspec, no XeLaTeX.
-9. Margins: 0.5in all sides via geometry package.
-10. Section order: Education, Experience, Projects, Technical Skills, Publications (if included).
-11. ZorAi is always the first project listed. Never dropped.
-12. Do not add any skill, technology, or experience not in the profile.
-13. Return ONLY the LaTeX code starting with \\documentclass. Nothing else.
-14. After generating, verify: does this feel written for THIS job, or a generic dump? If the latter, revise.
+You have three reference documents to guide your work:
 
-LaTeX base template to use:
-${LATEX_BASE_TEMPLATE}`
+--- RESUME PROFILE (source of truth — never fabricate anything not here) ---
+${profileDoc}
 
-    const userMessage = `JOB DESCRIPTION:
+--- ATS & SEO OPTIMIZATION GUIDE ---
+${atsDoc}
+
+--- RESUME BUILDER RULES (follow every rule without exception) ---
+${builderDoc}
+
+Generate a tailored 1-page LaTeX resume. Follow the hard rules in the resume builder doc exactly. Use only data from the profile doc. Apply ATS optimization from the SEO doc.`
+
+    const userMessage = `
+${company_name ? `Company: ${company_name}` : ''}
+${job_title ? `Role: ${job_title}` : ''}
+
+JOB DESCRIPTION:
 ${job_description}
 
 ATS KEYWORDS EXTRACTED:
@@ -63,10 +92,11 @@ ${keywords.join(', ')}
 
 JOB CATEGORY: ${category}
 
-PROFILE SUBSET TO USE:
+SELECTED PROFILE SUBSET:
 ${JSON.stringify(subset, null, 2)}
 
-Generate the complete LaTeX resume code.`
+Generate the complete LaTeX resume code for this specific role.
+`
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-5',
@@ -109,6 +139,8 @@ Generate the complete LaTeX resume code.`
         matched_keywords: matched,
         missing_skills: missing,
         job_category: category,
+        visa_warning,
+        visa_warning_reason,
         warning: 'Resume generated but could not be saved',
       })
     }
@@ -120,6 +152,8 @@ Generate the complete LaTeX resume code.`
       matched_keywords: matched,
       missing_skills: missing,
       job_category: category,
+      visa_warning,
+      visa_warning_reason,
     })
   } catch (error) {
     console.error('Resume generation error:', error)

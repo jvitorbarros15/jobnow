@@ -1,31 +1,26 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Menu, X, LogOut, Inbox, PenTool, Search } from 'lucide-react'
+import { LogOut, Inbox, PenTool, Search, Mail, House } from 'lucide-react'
+import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import NavLink from './NavLink'
 
 interface SidebarProps {
   userEmail?: string
+  gmailConnected?: boolean
 }
 
-export default function Sidebar({ userEmail }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const pathname = usePathname()
-
+export default function Sidebar({ userEmail, gmailConnected }: SidebarProps) {
   const navItems = [
+    { href: '/home',    label: 'Home',    icon: House },
     { href: '/tracker', label: 'Tracker', icon: Inbox },
-    { href: '/posts', label: 'Posts', icon: PenTool },
-    { href: '/jobs', label: 'Jobs', icon: Search },
+    { href: '/posts',   label: 'Posts',   icon: PenTool },
+    { href: '/jobs',    label: 'Jobs',    icon: Search },
   ]
 
   const getInitials = (email?: string) => {
-    if (!email) return 'JN'
+    if (!email) return 'JV'
     const parts = email.split('@')[0].split('.')
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase()
-    }
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
     return email[0].toUpperCase()
   }
 
@@ -34,69 +29,59 @@ export default function Sidebar({ userEmail }: SidebarProps) {
     window.location.href = '/login'
   }
 
+  const handleConnectGmail = async () => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/callback`,
+        scopes: 'gmail.readonly calendar.events spreadsheets',
+      },
+    })
+  }
+
   return (
-    <aside
-      className={`fixed left-0 top-0 h-screen bg-surface border-r border-border transition-all duration-200 z-40 flex flex-col md:relative ${
-        isCollapsed ? 'w-[60px]' : 'w-64'
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        {!isCollapsed && (
-          <h1 className="font-serif text-lg font-bold text-white">JobMaker</h1>
-        )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 hover:bg-[#1a1a24] rounded transition-colors"
-          aria-label="Toggle sidebar"
-        >
-          {isCollapsed ? (
-            <Menu size={20} className="text-white" />
-          ) : (
-            <X size={20} className="text-white" />
-          )}
-        </button>
+    <aside className="fixed left-0 top-0 h-screen w-14 bg-sidebar z-40 flex flex-col items-center py-4">
+      {/* Logo */}
+      <div className="w-7 h-7 bg-accent rounded flex items-center justify-center mb-8 flex-shrink-0">
+        <span className="font-display text-[11px] font-bold text-white tracking-tight">JN</span>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      {/* Nav */}
+      <nav className="flex flex-col items-center gap-0.5 flex-1">
         {navItems.map((item) => (
-          <NavLink
-            key={item.href}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
-            isCollapsed={isCollapsed}
-            isActive={pathname.startsWith(item.href)}
-          />
+          <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} />
         ))}
       </nav>
 
-      {/* User Profile Section */}
-      <div className="p-4 border-t border-border space-y-3">
-        <div
-          className={`flex items-center gap-3 ${
-            isCollapsed ? 'justify-center' : ''
-          }`}
+      {/* Bottom */}
+      <div className="flex flex-col items-center gap-0.5">
+        <button
+          onClick={gmailConnected ? undefined : handleConnectGmail}
+          title={gmailConnected ? 'Gmail connected' : 'Connect Gmail'}
+          className="relative p-2.5 text-[#4a4743] hover:text-[#c8c4be] transition-colors duration-150 disabled:cursor-default cursor-pointer"
+          disabled={gmailConnected}
         >
-          <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-            {getInitials(userEmail)}
-          </div>
-          {!isCollapsed && (
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted truncate">{userEmail || 'user@example.com'}</p>
-            </div>
-          )}
+          <Mail size={14} strokeWidth={1.5} />
+          <span className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${gmailConnected ? 'bg-green' : 'bg-accent'}`} />
+        </button>
+
+        <div
+          className="w-6 h-6 rounded-full bg-[#252220] border border-[#352f2a] flex items-center justify-center text-[9px] font-semibold text-[#c8c4be] font-sans"
+          title={userEmail}
+        >
+          {getInitials(userEmail)}
         </div>
+
         <button
           onClick={handleSignOut}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1a1a24] text-white text-sm transition-colors ${
-            isCollapsed ? 'justify-center' : ''
-          }`}
-          title={isCollapsed ? 'Sign out' : ''}
+          title="Sign out"
+          className="p-2.5 text-[#4a4743] hover:text-[#c8c4be] transition-colors duration-150 cursor-pointer"
         >
-          <LogOut size={18} />
-          {!isCollapsed && <span>Sign out</span>}
+          <LogOut size={14} strokeWidth={1.5} />
         </button>
       </div>
     </aside>

@@ -22,32 +22,28 @@ export default function LatexOutput({ latex, onCopy }: LatexOutputProps) {
 
   return (
     <div className="space-y-3">
+      <p className="text-[9px] font-sans uppercase tracking-[0.15em] text-muted">LaTeX output</p>
       <pre
-        className="text-xs overflow-x-auto max-h-96 p-4 rounded-lg leading-relaxed"
-        style={{
-          backgroundColor: '#0a0a0f',
-          fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-          color: '#e2e8f0',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }}
+        className="font-mono text-xs overflow-x-auto max-h-80 p-4 leading-relaxed"
+        style={{ backgroundColor: '#0f1013', color: '#f0a500', border: '1px solid #2c2f38' }}
       >
         {latex}
       </pre>
       <div className="flex gap-2">
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border border-border text-muted hover:border-accent/50 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-2 border border-border text-muted hover:text-[#1c1a18] hover:border-border/80 text-xs font-sans transition-colors"
         >
-          <Copy size={14} />
-          {copied ? 'Copied ✓' : 'Copy LaTeX'}
+          <Copy size={12} />
+          {copied ? 'Copied' : 'Copy LaTeX'}
         </button>
         <a
           href={overleafUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-green-600 hover:bg-green-500 text-white transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-black text-xs font-semibold font-sans transition-opacity hover:opacity-90"
         >
-          <ExternalLink size={14} />
+          <ExternalLink size={12} />
           Open in Overleaf
         </a>
       </div>
