@@ -44,10 +44,10 @@ export default function DigestEntry({
       </button>
 
       {open && (
-        <div className="px-4 pb-3 border-t border-border/30 pt-3 bg-surface-2/5">
-          <pre className="text-[11px] font-mono leading-relaxed text-[#2d2a27] whitespace-pre-wrap overflow-x-auto">
+        <div className="px-4 pb-4 border-t border-border/30 pt-4 bg-surface-2/5">
+          <div className="text-sm leading-7 text-[#2d2a27] whitespace-pre-wrap overflow-x-auto font-sans">
             {content}
-          </pre>
+          </div>
         </div>
       )}
     </div>
