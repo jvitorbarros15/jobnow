@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import JobTable from '@/components/tracker/JobTable'
 import StatsCard from '@/components/tracker/StatsCard'
 import AgentSearchPanel from '@/components/tracker/AgentSearchPanel'
-import SyncButton from '@/components/tracker/SyncButton'
 import type { JobApplication } from '@/types/tracker'
 import type { AgentSearchResult } from '@/types/jobs'
 
@@ -117,36 +116,55 @@ export default function TrackerPage() {
 
       {/* Header Section */}
       <div
-        className="opacity-0 flex items-baseline justify-between"
+        className="opacity-0"
         style={{ animation: 'fadeInUp 0.35s ease 0ms forwards' }}
       >
-        <h1 className="font-display text-2xl font-bold text-[#171412] tracking-tight">Job Tracker</h1>
-        <SyncButton
-          onSyncComplete={({ synced, calendar_events_created }) => {
-            fetchApplications()
-            showToast('success', `Synced ${synced} new applications`)
-          }}
-          onError={(msg) => showToast('error', msg)}
-          onSyncStart={() => {}}
-        />
+        <div className="mb-1">
+          <h1 className="text-3xl font-bold text-[#0C4A6E] tracking-tight" style={{ fontFamily: 'Fira Code, monospace' }}>Job Tracker</h1>
+        </div>
+        <p className="text-sm text-[#0EA5E9]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>Track applications, interview status, and AI-powered job matches</p>
       </div>
 
       {/* Stats Row */}
-      <div className="opacity-0 grid grid-cols-2 lg:grid-cols-4 gap-4" style={{ animation: 'fadeInUp 0.35s ease 60ms forwards' }}>
-        <StatsCard icon={Briefcase} label="Active" value={stats.active} delay={0} />
-        <StatsCard icon={Calendar} label="Interviewing" value={stats.interviews} delay={50} />
-        <StatsCard icon={Award} label="Offers" value={stats.offers} delay={100} />
-        <StatsCard icon={AlertCircle} label="Rejected" value={stats.rejected} delay={150} />
+      <div className="opacity-0 grid grid-cols-2 lg:grid-cols-4 gap-3" style={{ animation: 'fadeInUp 0.35s ease 60ms forwards' }}>
+        <div className="bg-white rounded border-2 border-[#0369A1] p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Briefcase size={18} className="text-[#0369A1]" />
+            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Active</span>
+          </div>
+          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.active}</div>
+        </div>
+        <div className="bg-white rounded border-2 border-[#0EA5E9] p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Calendar size={18} className="text-[#0EA5E9]" />
+            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Interviewing</span>
+          </div>
+          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.interviews}</div>
+        </div>
+        <div className="bg-white rounded border-2 border-[#22C55E] p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Award size={18} className="text-[#22C55E]" />
+            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Offers</span>
+          </div>
+          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.offers}</div>
+        </div>
+        <div className="bg-white rounded border-2 border-red-400 p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle size={18} className="text-red-400" />
+            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Rejected</span>
+          </div>
+          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.rejected}</div>
+        </div>
       </div>
 
       {/* Content Grid */}
       <div className="opacity-0 grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6" style={{ animation: 'fadeInUp 0.35s ease 120ms forwards' }}>
         {/* Left Panel: Job Table */}
-        <div className="bg-surface border border-border rounded-lg p-4">
+        <div className="bg-white rounded border-2 border-[#E0E7FF] p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs uppercase tracking-[0.15em] text-muted">Applications</h2>
+            <h2 className="text-sm font-semibold text-[#0C4A6E] uppercase tracking-wide" style={{ fontFamily: 'Fira Code, monospace' }}>Applications</h2>
             {applications.length > 0 && (
-              <span className="font-mono text-xs text-muted">{applications.length}</span>
+              <span className="text-xs font-bold text-[#0369A1]">{applications.length}</span>
             )}
           </div>
           {loading ? (

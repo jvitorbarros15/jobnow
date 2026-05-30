@@ -22,11 +22,20 @@ export default function AgentSearchPanel({
   if (!result && !loading && !error) {
     return (
       <div className="bg-surface border border-border rounded-lg p-4">
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <h3 className="text-sm font-medium mb-2">No searches yet</h3>
-          <p className="text-xs text-muted">
-            Click 'Run Search' to discover AI-ranked opportunities
-          </p>
+        <div className="flex flex-col items-center justify-center py-8 text-center gap-4">
+          <div>
+            <h3 className="text-sm font-medium mb-2">No searches yet</h3>
+            <p className="text-xs text-muted">
+              Discover AI-ranked job opportunities matched to your profile
+            </p>
+          </div>
+          <button
+            onClick={onRunSearch}
+            disabled={loading}
+            className="bg-accent text-white px-4 py-2 rounded text-sm font-semibold hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Run Search
+          </button>
         </div>
       </div>
     )
