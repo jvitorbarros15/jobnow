@@ -69,7 +69,10 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError || !insertedRow?.id) {
-      return NextResponse.json({ error: 'Failed to create search record' }, { status: 500 })
+      return NextResponse.json(
+        { error: `Failed to create search record: ${insertError?.message ?? 'no row returned'}` },
+        { status: 500 }
+      )
     }
     searchId = insertedRow.id
 
@@ -180,7 +183,7 @@ Include your top 10 results sorted by fit_score descending.`
       .select()
       .single()
 
-    if (updateError) throw new Error('Failed to save results')
+    if (updateError) throw new Error(`Failed to save results: ${updateError.message}`)
 
     return NextResponse.json({ result: updatedRow }, { status: 200 })
   } catch (error) {
