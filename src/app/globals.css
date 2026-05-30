@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -12,9 +11,9 @@
   --color-red:        #dc2626;
   --color-muted:      #8c8884;
 
-  --font-sans:    "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-  --font-display: "Fira Code", monospace;
-  --font-mono:    "Fira Code", "Courier New",  monospace;
+  --font-sans:    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  --font-display: "Georgia", serif;
+  --font-mono:    "Courier New",  monospace;
 }
 
 @layer base {
