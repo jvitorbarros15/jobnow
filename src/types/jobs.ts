@@ -46,3 +46,28 @@ export interface Resume {
   missing_skills: string[]
   created_at: string
 }
+
+export interface AgentJobResult {
+  id: string
+  title: string
+  company: string
+  location: string
+  remote: boolean
+  url: string
+  source: string
+  fit_score: number
+  sponsorship_status: 'confirmed' | 'likely' | 'unknown' | 'no'
+  fit_summary: string
+  priority: 'high' | 'medium' | 'low'
+  action_items: string[]
+}
+
+export interface AgentSearchResult {
+  id: string
+  status: 'running' | 'complete' | 'failed'
+  results: AgentJobResult[]
+  summary: string
+  sources_searched: number
+  created_at: string
+  completed_at: string | null
+}

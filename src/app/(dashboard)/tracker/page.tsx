@@ -1,10 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { CheckCircle, XCircle } from 'lucide-react'
+import { CheckCircle, XCircle, Briefcase, Calendar, Award, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import JobTable from '@/components/tracker/JobTable'
+import StatsCard from '@/components/tracker/StatsCard'
+import AgentSearchPanel from '@/components/tracker/AgentSearchPanel'
+import SyncButton from '@/components/tracker/SyncButton'
 import type { JobApplication } from '@/types/tracker'
+import type { AgentSearchResult } from '@/types/jobs'
 
 type Toast = { type: 'success' | 'error'; message: string }
 
@@ -26,6 +30,9 @@ export default function TrackerPage() {
   const [applications, setApplications] = useState<JobApplication[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<Toast | null>(null)
+  const [agentSearch, setAgentSearch] = useState<AgentSearchResult | null>(null)
+  const [agentLoading, setAgentLoading] = useState(false)
+  const [agentError, setAgentError] = useState<string | null>(null)
   const supabase = createClient()
 
   const fetchApplications = useCallback(async () => {
@@ -40,7 +47,16 @@ export default function TrackerPage() {
     setLoading(false)
   }, [supabase])
 
-  useEffect(() => { fetchApplications() }, [fetchApplications])
+  useEffect(() => {
+    fetchApplications()
+    // Fetch last agent search result
+    fetch('/api/jobs/agent-search')
+      .then(r => r.json())
+      .then(data => {
+        if (data.result) setAgentSearch(data.result)
+      })
+      .catch(() => {})
+  }, [fetchApplications])
 
   function showToast(type: 'success' | 'error', message: string) {
     setToast({ type, message })
@@ -53,13 +69,40 @@ export default function TrackerPage() {
     else setApplications((prev) => prev.filter((a) => a.id !== id))
   }
 
-  const active       = applications.filter((a) => a.status !== 'unknown')
-  const interviews   = applications.filter((a) => a.status === 'interview_scheduled' || a.status === 'interview_completed')
-  const offers       = applications.filter((a) => a.status === 'offer')
-  const rejected     = applications.filter((a) => a.status === 'rejected' || a.status === 'ghosted')
+  const handleRunAgentSearch = async () => {
+    setAgentLoading(true)
+    setAgentError(null)
+    try {
+      const response = await fetch('/api/jobs/agent-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      if (!response.ok) throw new Error('Search failed')
+      const data = await response.json()
+      setAgentSearch(data.result)
+      showToast('success', 'Search complete! Check the picks on the right.')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Search failed'
+      setAgentError(message)
+      showToast('error', `Search failed: ${message}`)
+    } finally {
+      setAgentLoading(false)
+    }
+  }
+
+  const stats = {
+    active: applications.filter(a => a.status !== 'unknown').length,
+    interviews: applications.filter(a =>
+      a.status === 'interview_scheduled' || a.status === 'interview_completed'
+    ).length,
+    offers: applications.filter(a => a.status === 'offer').length,
+    rejected: applications.filter(a =>
+      a.status === 'rejected' || a.status === 'ghosted'
+    ).length,
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Toast */}
       {toast && (
         <div className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm font-sans shadow-lg ${
@@ -72,59 +115,56 @@ export default function TrackerPage() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Header Section */}
       <div
-        className="flex items-baseline justify-between opacity-0"
+        className="opacity-0 flex items-baseline justify-between"
         style={{ animation: 'fadeInUp 0.35s ease 0ms forwards' }}
       >
         <h1 className="font-display text-2xl font-bold text-[#171412] tracking-tight">Job Tracker</h1>
-        {!loading && active.length > 0 && (
-          <div className="flex items-center gap-2.5 text-xs font-mono text-muted">
-            <span>
-              <span className="font-semibold text-[#171412]">{active.length}</span>
-              <span className="ml-1">applied</span>
-            </span>
-            {interviews.length > 0 && (
-              <>
-                <span className="text-border select-none">·</span>
-                <span>
-                  <span className="font-semibold text-accent">{interviews.length}</span>
-                  <span className="ml-1">interviewing</span>
-                </span>
-              </>
-            )}
-            {offers.length > 0 && (
-              <>
-                <span className="text-border select-none">·</span>
-                <span>
-                  <span className="font-semibold text-green">{offers.length}</span>
-                  <span className="ml-1">{offers.length === 1 ? 'offer' : 'offers'}</span>
-                </span>
-              </>
-            )}
-          </div>
-        )}
+        <SyncButton
+          onSyncComplete={({ synced, calendar_events_created }) => {
+            fetchApplications()
+            showToast('success', `Synced ${synced} new applications`)
+          }}
+          onError={(msg) => showToast('error', msg)}
+          onSyncStart={() => {}}
+        />
       </div>
 
-      {/* Table */}
-      <div
-        className="opacity-0"
-        style={{ animation: 'fadeInUp 0.35s ease 80ms forwards' }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[10px] font-sans uppercase tracking-widest text-muted font-medium">Applications</p>
-          {applications.length > 0 && (
-            <span className="font-mono text-xs text-muted">{applications.length}</span>
+      {/* Stats Row */}
+      <div className="opacity-0 grid grid-cols-2 lg:grid-cols-4 gap-4" style={{ animation: 'fadeInUp 0.35s ease 60ms forwards' }}>
+        <StatsCard icon={Briefcase} label="Active" value={stats.active} delay={0} />
+        <StatsCard icon={Calendar} label="Interviewing" value={stats.interviews} delay={50} />
+        <StatsCard icon={Award} label="Offers" value={stats.offers} delay={100} />
+        <StatsCard icon={AlertCircle} label="Rejected" value={stats.rejected} delay={150} />
+      </div>
+
+      {/* Content Grid */}
+      <div className="opacity-0 grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6" style={{ animation: 'fadeInUp 0.35s ease 120ms forwards' }}>
+        {/* Left Panel: Job Table */}
+        <div className="bg-surface border border-border rounded-lg p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs uppercase tracking-[0.15em] text-muted">Applications</h2>
+            {applications.length > 0 && (
+              <span className="font-mono text-xs text-muted">{applications.length}</span>
+            )}
+          </div>
+          {loading ? (
+            <div className="border-t border-border">
+              {[0, 1, 2, 3, 4].map((i) => <SkeletonRow key={i} delay={i * 50} />)}
+            </div>
+          ) : (
+            <JobTable applications={applications} onDelete={handleDelete} />
           )}
         </div>
 
-        {loading ? (
-          <div className="border-t border-border">
-            {[0, 1, 2, 3, 4].map((i) => <SkeletonRow key={i} delay={i * 50} />)}
-          </div>
-        ) : (
-          <JobTable applications={applications} onDelete={handleDelete} />
-        )}
+        {/* Right Panel: Agent Search */}
+        <AgentSearchPanel
+          result={agentSearch}
+          loading={agentLoading}
+          error={agentError}
+          onRunSearch={handleRunAgentSearch}
+        />
       </div>
     </div>
   )
