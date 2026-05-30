@@ -35,6 +35,10 @@ yarn-error.log*
 
 # claude code
 .claude/
+CLAUDE.md
+
+# personal docs / planning
+docs/
 
 # vercel
 .vercel
