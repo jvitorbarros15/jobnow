@@ -76,7 +76,10 @@ export default function TrackerPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
-      if (!response.ok) throw new Error('Search failed')
+      if (!response.ok) {
+      const body = await response.json().catch(() => ({}))
+      throw new Error(body.error || 'Search failed')
+    }
       const data = await response.json()
       setAgentSearch(data.result)
       showToast('success', 'Search complete! Check the picks on the right.')
