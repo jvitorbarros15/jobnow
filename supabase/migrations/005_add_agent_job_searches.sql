@@ -1,6 +1,6 @@
 -- Create agent_job_searches table
 create table public.agent_job_searches (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users on delete cascade,
   status text not null default 'running' check (status in ('running', 'complete', 'failed')),
   results jsonb not null default '[]',
