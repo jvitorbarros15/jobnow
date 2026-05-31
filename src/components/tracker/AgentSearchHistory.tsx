@@ -10,7 +10,20 @@ interface AgentSearch {
   created_at: string
   completed_at: string
   summary: string
-  results: Array<{ id: string; title: string; company: string; fit_score: number }>
+  results: Array<{
+    id: string
+    title: string
+    company: string
+    location: string
+    remote: boolean
+    url: string
+    source: string
+    fit_score: number
+    sponsorship_status: string
+    fit_summary: string
+    priority: string
+    action_items: string[]
+  }>
   sources_searched: number
 }
 
@@ -227,22 +240,55 @@ export default function AgentSearchHistory() {
 
                         {/* Jobs list - expandable */}
                         {isSearchExpanded && search.results && search.results.length > 0 && (
-                          <div className="mt-2 ml-4 space-y-2 border-l-2 border-accent/20 pl-4">
+                          <div className="mt-3 ml-4 space-y-2.5 border-l-2 border-accent/20 pl-4">
                             {search.results.map((job) => (
-                              <div key={job.id} className="bg-white/[0.01] rounded-lg p-3 border border-white/[0.02] hover:bg-white/[0.03] transition-colors">
-                                <div className="space-y-1.5">
+                              <a
+                                key={job.id}
+                                href={job.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block bg-white/[0.01] rounded-lg p-3 border border-white/[0.02] hover:bg-white/[0.04] hover:border-accent/20 transition-all"
+                              >
+                                <div className="space-y-2">
+                                  {/* Header: title + fit score */}
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="flex-1 min-w-0">
                                       <p className="text-sm font-semibold text-text">{job.title}</p>
                                       <p className="text-xs text-muted/80">{job.company}</p>
                                     </div>
+                                    <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent font-semibold flex-shrink-0">{job.fit_score}/10</span>
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-[10px] text-muted/70">Fit score</span>
-                                    <span className="text-xs px-2.5 py-1 rounded-full bg-accent/20 text-accent font-semibold">{job.fit_score}/10</span>
+
+                                  {/* Location + remote */}
+                                  <div className="flex items-center gap-2 text-xs text-muted/70">
+                                    <span>{job.location}</span>
+                                    {job.remote && <span className="px-1.5 py-0.5 bg-white/[0.05] rounded text-accent">Remote</span>}
+                                  </div>
+
+                                  {/* Fit reason */}
+                                  <p className="text-xs text-text/80 leading-relaxed">{job.fit_summary}</p>
+
+                                  {/* Source + sponsorship */}
+                                  <div className="flex gap-1.5 flex-wrap pt-1">
+                                    <span className="text-[10px] px-2 py-1 rounded-full bg-white/[0.05]">{job.source}</span>
+                                    {job.sponsorship_status && (
+                                      <span className={`text-[10px] px-2 py-1 rounded-full ${
+                                        job.sponsorship_status === 'likely' ? 'bg-green/20 text-green' :
+                                        job.sponsorship_status === 'confirmed' ? 'bg-green/30 text-green' :
+                                        job.sponsorship_status === 'unlikely' ? 'bg-red/20 text-red' :
+                                        'bg-white/[0.05]'
+                                      }`}>
+                                        Sponsorship: {job.sponsorship_status}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Apply link */}
+                                  <div className="pt-1.5 flex items-center gap-1 text-accent text-xs font-medium hover:underline">
+                                    <span>Click to apply →</span>
                                   </div>
                                 </div>
-                              </div>
+                              </a>
                             ))}
                           </div>
                         )}
