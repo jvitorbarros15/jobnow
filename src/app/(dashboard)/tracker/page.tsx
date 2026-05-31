@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Briefcase, Calendar, Award, AlertCircle } from 'l
 import { createClient } from '@/lib/supabase/client'
 import JobTable from '@/components/tracker/JobTable'
 import StatsCard from '@/components/tracker/StatsCard'
+import AddApplicationForm from '@/components/tracker/AddApplicationForm'
 import AgentSearchPanel from '@/components/tracker/AgentSearchPanel'
 import AgentSearchHistory from '@/components/tracker/AgentSearchHistory'
 import type { JobApplication } from '@/types/tracker'
@@ -164,20 +165,21 @@ export default function TrackerPage() {
       {/* Content Grid */}
       <div className="opacity-0 grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6" style={{ animation: 'fadeInUp 0.35s ease 120ms forwards' }}>
         {/* Left Panel: Job Table */}
-        <div className="panel p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wide font-display">Applications</h2>
-            {applications.length > 0 && (
-              <span className="text-xs font-bold text-accent-2">{applications.length}</span>
+        <div className="panel">
+          <AddApplicationForm
+            onSuccess={(newApp) => {
+              setApplications((prev) => [newApp, ...prev])
+            }}
+          />
+          <div className="border-t border-border">
+            {loading ? (
+              <div>
+                {[0, 1, 2, 3, 4].map((i) => <SkeletonRow key={i} delay={i * 50} />)}
+              </div>
+            ) : (
+              <JobTable applications={applications} onDelete={handleDelete} />
             )}
           </div>
-          {loading ? (
-            <div className="border-t border-border">
-              {[0, 1, 2, 3, 4].map((i) => <SkeletonRow key={i} delay={i * 50} />)}
-            </div>
-          ) : (
-            <JobTable applications={applications} onDelete={handleDelete} />
-          )}
         </div>
 
         {/* Right Panel: Agent Search */}
