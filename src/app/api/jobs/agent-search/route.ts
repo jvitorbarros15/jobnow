@@ -13,6 +13,49 @@ async function loadAgentSystemPrompt(): Promise<string> {
   return withoutFrontmatter.split('# Persistent Agent Memory')[0].trim()
 }
 
+async function loadFoundJobs(): Promise<{ urls: string[]; count: number }> {
+  try {
+    const memoryPath = path.join(process.cwd(), '.claude', 'agent-memory', 'job-search-agent', 'found-jobs.json')
+    const content = await fs.readFile(memoryPath, 'utf-8')
+    const data = JSON.parse(content)
+    return { urls: data.found_job_urls || [], count: data.total_unique_jobs || 0 }
+  } catch {
+    return { urls: [], count: 0 }
+  }
+}
+
+async function saveFoundJobs(newJobs: Array<{ url: string; source: string }>, summary: string) {
+  try {
+    const memoryPath = path.join(process.cwd(), '.claude', 'agent-memory', 'job-search-agent', 'found-jobs.json')
+    const existing = await loadFoundJobs()
+    const allUrls = [...existing.urls]
+    const bySource: Record<string, number> = {}
+
+    for (const job of newJobs) {
+      if (!allUrls.includes(job.url)) {
+        allUrls.push(job.url)
+        bySource[job.source] = (bySource[job.source] || 0) + 1
+      }
+    }
+
+    const memory = {
+      last_search: new Date().toISOString(),
+      total_unique_jobs: allUrls.length,
+      found_job_urls: allUrls,
+      found_by_source: bySource,
+      search_history: [{
+        timestamp: new Date().toISOString(),
+        new_jobs_found: newJobs.length,
+        summary: summary.substring(0, 200)
+      }]
+    }
+
+    await fs.writeFile(memoryPath, JSON.stringify(memory, null, 2))
+  } catch (error) {
+    console.error('Failed to save found jobs:', error)
+  }
+}
+
 export async function GET(request: NextRequest) {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -54,6 +97,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const systemPrompt = await loadAgentSystemPrompt()
+    const foundJobs = await loadFoundJobs()
 
     const { data: insertedRow, error: insertError } = await supabase
       .from('agent_job_searches')
@@ -78,7 +122,11 @@ export async function POST(request: NextRequest) {
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-    const userPrompt = `Run a fresh job search following your complete protocol. Search all sources in your instructions.
+    const dedupeNote = foundJobs.urls.length > 0
+      ? `\n\n**IMPORTANT: You have already found ${foundJobs.count} unique jobs in previous searches. DO NOT include these URLs again:**\n${foundJobs.urls.slice(-50).map(u => `- ${u}`).join('\n')}\n\nOnly include NEW jobs you haven't seen before.`
+      : ''
+
+    const userPrompt = `Run a fresh job search following your complete protocol. Search all sources in your instructions.${dedupeNote}
 
 After completing your research, output your findings in your standard format, then close with this exact JSON block:
 \`\`\`json
@@ -104,7 +152,7 @@ After completing your research, output your findings in your standard format, th
 }
 \`\`\`
 
-Include your top 10 results sorted by fit_score descending.`
+Include your top 10 results sorted by fit_score descending. ONLY new jobs (not in the exclusion list above).`
 
     const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userPrompt }]
     let finalText = ''
@@ -169,6 +217,15 @@ Include your top 10 results sorted by fit_score descending.`
     const sourcesSearched = typeof agentResult.sources_searched === 'number'
       ? agentResult.sources_searched
       : results.length
+
+    // Save found jobs to memory
+    if (results.length > 0) {
+      const newJobsWithSource = results.map((r: { url: string; source: string }) => ({
+        url: r.url,
+        source: r.source
+      }))
+      await saveFoundJobs(newJobsWithSource, summary)
+    }
 
     const { data: updatedRow, error: updateError } = await supabase
       .from('agent_job_searches')
