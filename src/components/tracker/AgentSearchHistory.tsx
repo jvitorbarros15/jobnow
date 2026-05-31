@@ -18,6 +18,7 @@ export default function AgentSearchHistory() {
   const [searches, setSearches] = useState<AgentSearch[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set())
+  const [expandedSearches, setExpandedSearches] = useState<Set<string>>(new Set())
   const [deleting, setDeleting] = useState<string | null>(null)
   const [hoveredSearch, setHoveredSearch] = useState<string | null>(null)
 
@@ -170,48 +171,78 @@ export default function AgentSearchHistory() {
                   {/* Timeline dot */}
                   <div className="absolute ml-[-23px] w-3 h-3 bg-accent rounded-full opacity-60" />
 
-                  {dateSearches.map((search) => (
-                    <div
-                      key={search.id}
-                      className="group/item"
-                      onMouseEnter={() => setHoveredSearch(search.id)}
-                      onMouseLeave={() => setHoveredSearch(null)}
-                    >
-                      <div className="bg-white/[0.02] rounded-lg p-4 space-y-3 transition-all duration-200 hover:bg-white/[0.05] hover:border-accent/30 border border-white/[0.03] cursor-default">
-                        {/* Time and actions */}
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2 text-muted/80 text-sm">
-                            <Clock size={12} className="opacity-50" />
-                            <span className="font-mono text-sm">{format(new Date(search.created_at), 'HH:mm')}</span>
-                            <span className="text-[10px] text-muted/50">•</span>
-                            <span className="text-sm text-muted/70">{formatDistanceToNow(new Date(search.created_at), { addSuffix: true })}</span>
+                  {dateSearches.map((search) => {
+                    const isSearchExpanded = expandedSearches.has(search.id)
+                    return (
+                      <div key={search.id} className="group/item">
+                        <button
+                          onClick={() => {
+                            setExpandedSearches((prev) => {
+                              const next = new Set(prev)
+                              next.has(search.id) ? next.delete(search.id) : next.add(search.id)
+                              return next
+                            })
+                          }}
+                          className="w-full bg-white/[0.02] rounded-lg p-4 space-y-3 transition-all duration-200 hover:bg-white/[0.05] hover:border-accent/30 border border-white/[0.03] cursor-pointer text-left"
+                        >
+                          {/* Time and actions */}
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2 text-muted/80 text-sm">
+                              <Clock size={12} className="opacity-50" />
+                              <span className="font-mono text-sm">{format(new Date(search.created_at), 'HH:mm')}</span>
+                              <span className="text-[10px] text-muted/50">•</span>
+                              <span className="text-sm text-muted/70">{formatDistanceToNow(new Date(search.created_at), { addSuffix: true })}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ChevronRight size={14} className={`text-accent/60 transition-transform duration-300 ${isSearchExpanded ? 'rotate-90' : ''}`} />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDelete(search.id)
+                                }}
+                                disabled={deleting === search.id}
+                                className="text-muted/40 hover:text-red transition-all duration-200 opacity-0 group-hover/item:opacity-100 flex-shrink-0 p-1.5 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
                           </div>
-                          <button
-                            onClick={() => handleDelete(search.id)}
-                            disabled={deleting === search.id}
-                            className="text-muted/40 hover:text-red transition-all duration-200 opacity-0 group-hover/item:opacity-100 flex-shrink-0 p-1.5 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
 
-                        {/* Summary text */}
-                        <p className="text-text/90 line-clamp-2 text-sm leading-relaxed">{search.summary}</p>
+                          {/* Summary text */}
+                          <p className="text-text/90 line-clamp-2 text-sm leading-relaxed">{search.summary}</p>
 
-                        {/* Badges */}
-                        <div className="flex gap-2 flex-wrap pt-1">
-                          <div className="flex items-center gap-1.5 bg-accent/10 border border-accent/20 px-3 py-2 rounded-md">
-                            <Zap size={12} className="text-accent opacity-70" />
-                            <span className="text-accent font-semibold text-sm">{search.results?.length || 0}</span>
-                            <span className="text-accent/70 text-sm">jobs</span>
+                          {/* Badges */}
+                          <div className="flex gap-2 flex-wrap pt-1">
+                            <div className="flex items-center gap-1.5 bg-accent/10 border border-accent/20 px-3 py-2 rounded-md">
+                              <Zap size={12} className="text-accent opacity-70" />
+                              <span className="text-accent font-semibold text-sm">{search.results?.length || 0}</span>
+                              <span className="text-accent/70 text-sm">jobs</span>
+                            </div>
+                            <div className="bg-white/[0.04] border border-white/[0.08] px-3 py-2 rounded-md">
+                              <span className="text-muted/80 text-sm">{search.sources_searched} sources</span>
+                            </div>
                           </div>
-                          <div className="bg-white/[0.04] border border-white/[0.08] px-3 py-2 rounded-md">
-                            <span className="text-muted/80 text-sm">{search.sources_searched} sources</span>
+                        </button>
+
+                        {/* Jobs list - expandable */}
+                        {isSearchExpanded && search.results && search.results.length > 0 && (
+                          <div className="mt-2 ml-4 space-y-1.5 border-l-2 border-accent/20 pl-3">
+                            {search.results.map((job) => (
+                              <div key={job.id} className="bg-white/[0.01] rounded p-2.5 border border-white/[0.02] hover:bg-white/[0.02] transition-colors">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-text truncate">{job.title}</p>
+                                    <p className="text-xs text-muted">{job.company}</p>
+                                  </div>
+                                  <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent font-semibold flex-shrink-0">{job.fit_score}/10</span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
