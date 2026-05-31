@@ -134,16 +134,16 @@ export default function AgentSearchHistory() {
 
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">Search History</h3>
-        <span className="text-[10px] font-mono text-accent/60 bg-accent/10 px-2 py-1 rounded-full">{searches.length}</span>
+        <span className="text-[11px] font-mono text-accent/60 bg-accent/10 px-2.5 py-1.5 rounded-full">{searches.length}</span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {sortedDates.map((date, dateIdx) => {
           const isExpanded = expandedDates.has(date)
           const dateSearches = groupedByDate[date]
 
           return (
-            <div key={date} className="group" style={{ animation: `slideDown 0.3s ease-out ${dateIdx * 50}ms both` }}>
+            <div key={date} className="group">
               {/* Date header */}
               <button
                 onClick={() => {
@@ -153,61 +153,60 @@ export default function AgentSearchHistory() {
                     return next
                   })
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-white/[0.06] active:bg-white/[0.08] cursor-pointer border border-transparent hover:border-accent/20"
+                className="w-full flex items-center justify-between px-3 py-3 rounded-lg transition-all duration-200 hover:bg-white/[0.06] active:bg-white/[0.08] cursor-pointer border border-transparent hover:border-accent/20"
               >
-                <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
                   <div className="transition-transform duration-300" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)' }}>
-                    <ChevronRight size={14} className="text-accent/60" />
+                    <ChevronRight size={16} className="text-accent/60" />
                   </div>
-                  <span className="font-mono text-xs text-text font-medium truncate">{format(new Date(date), 'MMM d, yyyy')}</span>
-                  <span className="text-[9px] text-muted/70 bg-white/[0.04] px-2 py-0.5 rounded-full whitespace-nowrap">{dateSearches.length} searches</span>
+                  <span className="font-mono text-sm text-text font-medium">{format(new Date(date), 'MMM d, yyyy')}</span>
+                  <span className="text-[11px] text-muted/70 bg-white/[0.04] px-2.5 py-1 rounded-full whitespace-nowrap">{dateSearches.length} searches</span>
                 </div>
               </button>
 
               {/* Search entries - expandable */}
               {isExpanded && (
-                <div className="mt-2 ml-6 space-y-1.5 border-l-2 border-accent/20 pl-3 relative">
+                <div className="mt-3 ml-8 space-y-2 border-l-2 border-accent/20 pl-4">
                   {/* Timeline dot */}
-                  <div className="absolute -left-[9px] top-1 w-[6px] h-[6px] bg-accent rounded-full opacity-60" />
+                  <div className="absolute ml-[-23px] w-3 h-3 bg-accent rounded-full opacity-60" />
 
-                  {dateSearches.map((search, searchIdx) => (
+                  {dateSearches.map((search) => (
                     <div
                       key={search.id}
-                      className="search-enter group/item"
-                      style={{ animationDelay: `${searchIdx * 50}ms` }}
+                      className="group/item"
                       onMouseEnter={() => setHoveredSearch(search.id)}
                       onMouseLeave={() => setHoveredSearch(null)}
                     >
-                      <div className="text-[10px] bg-white/[0.02] rounded-lg p-3 space-y-2 transition-all duration-200 hover:bg-white/[0.05] hover:border-accent/30 border border-white/[0.03] cursor-default">
+                      <div className="bg-white/[0.02] rounded-lg p-4 space-y-3 transition-all duration-200 hover:bg-white/[0.05] hover:border-accent/30 border border-white/[0.03] cursor-default">
                         {/* Time and actions */}
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-1.5 text-muted/80">
-                            <Clock size={10} className="opacity-50" />
-                            <span className="font-mono text-[9px]">{format(new Date(search.created_at), 'HH:mm')}</span>
-                            <span className="text-[8px] text-muted/50">•</span>
-                            <span className="text-[9px]">{formatDistanceToNow(new Date(search.created_at), { addSuffix: true })}</span>
+                          <div className="flex items-center gap-2 text-muted/80 text-sm">
+                            <Clock size={12} className="opacity-50" />
+                            <span className="font-mono text-sm">{format(new Date(search.created_at), 'HH:mm')}</span>
+                            <span className="text-[10px] text-muted/50">•</span>
+                            <span className="text-sm text-muted/70">{formatDistanceToNow(new Date(search.created_at), { addSuffix: true })}</span>
                           </div>
                           <button
                             onClick={() => handleDelete(search.id)}
                             disabled={deleting === search.id}
-                            className="text-muted/40 hover:text-red transition-all duration-200 opacity-0 group-hover/item:opacity-100 flex-shrink-0 p-1 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
+                            className="text-muted/40 hover:text-red transition-all duration-200 opacity-0 group-hover/item:opacity-100 flex-shrink-0 p-1.5 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
                           >
-                            <Trash2 size={11} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
 
                         {/* Summary text */}
-                        <p className="text-text/90 line-clamp-2 text-[10px] leading-1.5">{search.summary}</p>
+                        <p className="text-text/90 line-clamp-2 text-sm leading-relaxed">{search.summary}</p>
 
                         {/* Badges */}
-                        <div className="flex gap-1.5 flex-wrap pt-1">
-                          <div className="flex items-center gap-1 bg-accent/10 border border-accent/20 px-2 py-1 rounded-md">
-                            <Zap size={9} className="text-accent opacity-70" />
-                            <span className="text-accent font-semibold text-[9px]">{search.results?.length || 0}</span>
-                            <span className="text-accent/70 text-[9px]">jobs</span>
+                        <div className="flex gap-2 flex-wrap pt-1">
+                          <div className="flex items-center gap-1.5 bg-accent/10 border border-accent/20 px-3 py-2 rounded-md">
+                            <Zap size={12} className="text-accent opacity-70" />
+                            <span className="text-accent font-semibold text-sm">{search.results?.length || 0}</span>
+                            <span className="text-accent/70 text-sm">jobs</span>
                           </div>
-                          <div className="bg-white/[0.04] border border-white/[0.08] px-2 py-1 rounded-md">
-                            <span className="text-muted/80 text-[9px]">{search.sources_searched} sources</span>
+                          <div className="bg-white/[0.04] border border-white/[0.08] px-3 py-2 rounded-md">
+                            <span className="text-muted/80 text-sm">{search.sources_searched} sources</span>
                           </div>
                         </div>
                       </div>
