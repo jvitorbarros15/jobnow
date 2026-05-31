@@ -10,13 +10,22 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('gmail_refresh_token')
     .eq('id', user.id)
     .single()
 
-  const gmailConnected = !!profile?.gmail_refresh_token
+  if (profileError && profileError.code !== 'PGRST116') {
+    console.error('Profile fetch error:', profileError)
+    throw new Error('Failed to load profile')
+  }
+
+  if (!profile) {
+    redirect('/onboarding')
+  }
+
+  const gmailConnected = !!profile.gmail_refresh_token
 
   return (
     <div className="min-h-screen bg-background">
