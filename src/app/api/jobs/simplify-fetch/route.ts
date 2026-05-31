@@ -9,9 +9,18 @@ interface SimplifyFetchResponse {
   role: string | null
 }
 
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+}
+
 function parseMetaTags(html: string): { title?: string; description?: string } {
-  const titleMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/)
-  const descMatch = html.match(/<meta\s+property="og:description"\s+content="([^"]+)"/)
+  const titleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"/)
+  const descMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]+)"/)
 
   return {
     title: titleMatch?.[1] || undefined,
@@ -85,12 +94,12 @@ export async function POST(req: NextRequest) {
     let role: string | null = null
 
     if (metaTags.title) {
-      const parts = metaTags.title.split(' at ')
-      if (parts.length === 2) {
-        role = parts[0].trim()
-        company = parts[1].trim()
+      const lastAt = metaTags.title.lastIndexOf(' at ')
+      if (lastAt > 0) {
+        role = decodeHtmlEntities(metaTags.title.slice(0, lastAt).trim())
+        company = decodeHtmlEntities(metaTags.title.slice(lastAt + 4).trim())
       } else {
-        role = metaTags.title
+        role = decodeHtmlEntities(metaTags.title)
       }
     }
 
@@ -99,9 +108,8 @@ export async function POST(req: NextRequest) {
       role,
     } as SimplifyFetchResponse)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: `Fetch failed: ${message}` },
+      { error: 'Failed to fetch' },
       { status: 500 }
     )
   }
