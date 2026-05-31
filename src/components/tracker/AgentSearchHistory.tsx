@@ -175,7 +175,7 @@ export default function AgentSearchHistory() {
                     const isSearchExpanded = expandedSearches.has(search.id)
                     return (
                       <div key={search.id} className="group/item">
-                        <button
+                        <div
                           onClick={() => {
                             setExpandedSearches((prev) => {
                               const next = new Set(prev)
@@ -183,7 +183,7 @@ export default function AgentSearchHistory() {
                               return next
                             })
                           }}
-                          className="w-full bg-white/[0.02] rounded-lg p-4 space-y-3 transition-all duration-200 hover:bg-white/[0.05] hover:border-accent/30 border border-white/[0.03] cursor-pointer text-left"
+                          className="w-full bg-white/[0.02] rounded-lg p-4 space-y-3 transition-all duration-200 hover:bg-white/[0.05] hover:border-accent/30 border border-white/[0.03] cursor-pointer"
                         >
                           {/* Time and actions */}
                           <div className="flex items-start justify-between gap-2">
@@ -195,16 +195,6 @@ export default function AgentSearchHistory() {
                             </div>
                             <div className="flex items-center gap-2">
                               <ChevronRight size={14} className={`text-accent/60 transition-transform duration-300 ${isSearchExpanded ? 'rotate-90' : ''}`} />
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleDelete(search.id)
-                                }}
-                                disabled={deleting === search.id}
-                                className="text-muted/40 hover:text-red transition-all duration-200 opacity-0 group-hover/item:opacity-100 flex-shrink-0 p-1.5 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
-                              >
-                                <Trash2 size={14} />
-                              </button>
                             </div>
                           </div>
 
@@ -222,19 +212,35 @@ export default function AgentSearchHistory() {
                               <span className="text-muted/80 text-sm">{search.sources_searched} sources</span>
                             </div>
                           </div>
-                        </button>
+                        </div>
+
+                        {/* Delete button - outside main div */}
+                        <div className="flex justify-end mt-2 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                          <button
+                            onClick={() => handleDelete(search.id)}
+                            disabled={deleting === search.id}
+                            className="text-muted/40 hover:text-red transition-all duration-200 flex-shrink-0 p-1.5 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
 
                         {/* Jobs list - expandable */}
                         {isSearchExpanded && search.results && search.results.length > 0 && (
-                          <div className="mt-2 ml-4 space-y-1.5 border-l-2 border-accent/20 pl-3">
+                          <div className="mt-2 ml-4 space-y-2 border-l-2 border-accent/20 pl-4">
                             {search.results.map((job) => (
-                              <div key={job.id} className="bg-white/[0.01] rounded p-2.5 border border-white/[0.02] hover:bg-white/[0.02] transition-colors">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-text truncate">{job.title}</p>
-                                    <p className="text-xs text-muted">{job.company}</p>
+                              <div key={job.id} className="bg-white/[0.01] rounded-lg p-3 border border-white/[0.02] hover:bg-white/[0.03] transition-colors">
+                                <div className="space-y-1.5">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-semibold text-text">{job.title}</p>
+                                      <p className="text-xs text-muted/80">{job.company}</p>
+                                    </div>
                                   </div>
-                                  <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent font-semibold flex-shrink-0">{job.fit_score}/10</span>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[10px] text-muted/70">Fit score</span>
+                                    <span className="text-xs px-2.5 py-1 rounded-full bg-accent/20 text-accent font-semibold">{job.fit_score}/10</span>
+                                  </div>
                                 </div>
                               </div>
                             ))}
