@@ -19,10 +19,10 @@ export default async function DashboardLayout({
   const gmailConnected = !!profile?.gmail_refresh_token
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Sidebar userEmail={user.email} gmailConnected={gmailConnected} />
-      <main className="flex-1 ml-14 overflow-auto">
-        <div className="p-8">{children}</div>
+      <main className="ml-16 min-h-screen">
+        <div className="mx-auto max-w-7xl px-6 py-8 md:px-10">{children}</div>
       </main>
     </div>
   )
