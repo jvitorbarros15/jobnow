@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import JobTable from '@/components/tracker/JobTable'
 import StatsCard from '@/components/tracker/StatsCard'
 import AgentSearchPanel from '@/components/tracker/AgentSearchPanel'
+import AgentSearchHistory from '@/components/tracker/AgentSearchHistory'
 import type { JobApplication } from '@/types/tracker'
 import type { AgentSearchResult } from '@/types/jobs'
 
@@ -180,13 +181,16 @@ export default function TrackerPage() {
         </div>
 
         {/* Right Panel: Agent Search */}
-        <AgentSearchPanel
-          result={agentSearch}
-          loading={agentLoading}
-          error={agentError}
-          onRunSearch={handleRunAgentSearch}
-          onJobSaved={fetchApplications}
-        />
+        <div className="space-y-4">
+          <AgentSearchPanel
+            result={agentSearch}
+            loading={agentLoading}
+            error={agentError}
+            onRunSearch={handleRunAgentSearch}
+            onJobSaved={fetchApplications}
+          />
+          <AgentSearchHistory />
+        </div>
       </div>
     </div>
   )
