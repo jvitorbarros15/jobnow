@@ -104,6 +104,7 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
       const newApp = await res.json()
       onSuccess(newApp)
       setIsExpanded(false)
+      setError(null)
       setFormData({
         simplifyUrl: '',
         company: '',
