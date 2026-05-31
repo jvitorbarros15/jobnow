@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AlertTriangle, Loader2, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import JobSearchForm from '@/components/jobs/JobSearchForm'
@@ -79,6 +79,9 @@ export default function JobsPage() {
       const res = await fetch('/api/jobs/agent-search', { method: 'POST' })
       if (!res.ok) throw new Error('Search failed')
 
+      // Store in localStorage so polling continues even after navigation
+      localStorage.setItem('agentSearchActive', 'true')
+
       const pollResults = async () => {
         const pollRes = await fetch('/api/jobs/agent-search')
         const data = await pollRes.json()
@@ -89,6 +92,7 @@ export default function JobsPage() {
             sources_searched: data.result.sources_searched || 0,
           })
           setActiveTab('agent')
+          localStorage.removeItem('agentSearchActive')
           if (agentSearchPoll) clearInterval(agentSearchPoll)
           setAgentSearching(false)
         }
@@ -100,9 +104,41 @@ export default function JobsPage() {
       pollResults()
     } catch (error) {
       console.error('Agent search error:', error)
+      localStorage.removeItem('agentSearchActive')
       setAgentSearching(false)
     }
   }
+
+  // Resume polling if search was in progress when page loads
+  useEffect(() => {
+    const isSearchActive = localStorage.getItem('agentSearchActive') === 'true'
+    if (isSearchActive && !agentSearchPoll && !agentResults) {
+      setAgentSearching(true)
+      const pollResults = async () => {
+        const pollRes = await fetch('/api/jobs/agent-search')
+        const data = await pollRes.json()
+        if (data.result?.status === 'complete') {
+          setAgentResults({
+            results: data.result.results || [],
+            summary: data.result.summary || '',
+            sources_searched: data.result.sources_searched || 0,
+          })
+          setActiveTab('agent')
+          localStorage.removeItem('agentSearchActive')
+          if (agentSearchPoll) clearInterval(agentSearchPoll)
+          setAgentSearching(false)
+        }
+      }
+
+      const pollInterval = setInterval(pollResults, 5000)
+      setAgentSearchPoll(pollInterval)
+      pollResults()
+    }
+
+    return () => {
+      if (agentSearchPoll) clearInterval(agentSearchPoll)
+    }
+  }, [])
 
   async function handleSave(job: JobResult) {
     const supabase = createClient()
