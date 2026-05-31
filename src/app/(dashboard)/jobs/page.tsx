@@ -260,7 +260,7 @@ export default function JobsPage() {
                               <span className={`text-[10px] px-2 py-0.5 rounded-full ${
                                 job.sponsorship_status === 'confirmed' ? 'bg-green/20 text-green' :
                                 job.sponsorship_status === 'likely' ? 'bg-cyan/20 text-cyan' :
-                                job.sponsorship_status === 'unlikely' ? 'bg-red/20 text-red' :
+                                job.sponsorship_status === 'no' ? 'bg-red/20 text-red' :
                                 'bg-white/[0.05]'
                               }`}>
                                 Sponsorship: {job.sponsorship_status}

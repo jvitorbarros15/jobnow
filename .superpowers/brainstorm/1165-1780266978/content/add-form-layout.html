@@ -1,0 +1,88 @@
+<h2>Where should "Add Application" live?</h2>
+<p class="subtitle">Pick the entry pattern that fits best. All three support both manual entry and Simplify URL paste.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family:monospace;font-size:11px;background:#0f0f0f;border-radius:6px;padding:10px;color:#aaa;border:1px solid #222;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="color:#fff;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;">Applications</span>
+          <span style="background:#3b82f6;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;">+ Add</span>
+        </div>
+        <div style="background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:8px;margin-bottom:4px;font-size:10px;color:#888;">
+          Rows... Rows... Rows...
+        </div>
+        <!-- Slide-in hint -->
+        <div style="position:relative;margin-top:4px;">
+          <div style="background:#1e2a3a;border:1px solid #3b82f650;border-radius:5px;padding:8px;font-size:10px;color:#60a5fa;">
+            ↳ Clicking "+ Add" slides in a panel from the right →
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Right Slide-in Drawer</h3>
+      <p>Add button in panel header → form slides in from the right edge, overlays the agent search panel. Clean separation. Most screen real estate for the form.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family:monospace;font-size:11px;background:#0f0f0f;border-radius:6px;padding:10px;color:#aaa;border:1px solid #222;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="color:#fff;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;">Applications</span>
+          <span style="background:#3b82f6;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;">+ Add</span>
+        </div>
+        <!-- Inline expanded form at top -->
+        <div style="background:#1a1a2e;border:1px solid #3b82f620;border-radius:5px;padding:8px;margin-bottom:6px;">
+          <div style="font-size:10px;color:#60a5fa;margin-bottom:6px;font-weight:600;">↳ Form expands inline, above the table</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px;">
+            <div style="background:#111;border:1px solid #333;border-radius:3px;padding:3px 5px;font-size:9px;color:#555;">Company</div>
+            <div style="background:#111;border:1px solid #333;border-radius:3px;padding:3px 5px;font-size:9px;color:#555;">Role</div>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <div style="background:#111;border:1px solid #333;border-radius:3px;padding:3px 5px;font-size:9px;color:#555;flex:1;">Simplify URL (optional)</div>
+            <div style="background:#3b82f6;border-radius:3px;padding:3px 7px;font-size:9px;color:#fff;">Save</div>
+          </div>
+        </div>
+        <div style="background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:6px;font-size:10px;color:#888;">Table rows below...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Inline Expand (top of table)</h3>
+      <p>Clicking "Add" expands a compact form at the top of the panel, above the rows. No overlay — everything visible at once. Compact fields only.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family:monospace;font-size:11px;background:#0f0f0f;border-radius:6px;padding:10px;color:#aaa;border:1px solid #222;position:relative;">
+        <div style="opacity:0.4;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="color:#fff;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Applications</span>
+          </div>
+          <div style="background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:6px;font-size:10px;color:#888;">Rows...</div>
+        </div>
+        <!-- Modal overlay -->
+        <div style="position:absolute;inset:4px;background:#161616;border:1px solid #3b82f640;border-radius:6px;padding:10px;box-shadow:0 8px 32px #00000080;">
+          <div style="font-size:10px;color:#60a5fa;font-weight:600;margin-bottom:6px;">Add Application</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px;">
+            <div style="background:#111;border:1px solid #333;border-radius:3px;padding:3px 5px;font-size:9px;color:#555;">Company</div>
+            <div style="background:#111;border:1px solid #333;border-radius:3px;padding:3px 5px;font-size:9px;color:#555;">Role</div>
+          </div>
+          <div style="background:#111;border:1px solid #333;border-radius:3px;padding:3px 5px;font-size:9px;color:#555;margin-bottom:4px;">Simplify URL</div>
+          <div style="display:flex;justify-content:flex-end;gap:4px;">
+            <div style="background:#222;border-radius:3px;padding:3px 7px;font-size:9px;color:#888;">Cancel</div>
+            <div style="background:#3b82f6;border-radius:3px;padding:3px 7px;font-size:9px;color:#fff;">Save</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Centered Modal</h3>
+      <p>Classic dialog overlaying the full page. Most familiar pattern. Works well if the form has many fields (status, notes, dates). Easy to dismiss.</p>
+    </div>
+  </div>
+
+</div>

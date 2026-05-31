@@ -1,0 +1,116 @@
+<h2>Applications Panel — Full Design</h2>
+<p class="subtitle">Two states: collapsed (default) and expanded (form visible). Does this look right?</p>
+
+<div class="section">
+  <span class="label">State 1 — Default (no form)</span>
+  <div class="mockup">
+    <div class="mockup-header">Applications Panel</div>
+    <div class="mockup-body" style="font-family:monospace;font-size:11px;padding:12px;">
+      <!-- Panel header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #222;">
+        <span style="color:#fff;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">Applications</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="color:#aaa;font-size:10px;">3</span>
+          <button style="background:#1e2a3a;border:1px solid #3b82f640;color:#60a5fa;padding:3px 9px;border-radius:4px;font-size:10px;cursor:pointer;">+ Add</button>
+        </div>
+      </div>
+      <!-- Table rows -->
+      <div style="color:#888;font-size:10px;border-bottom:1px solid #1a1a1a;padding:6px 0;display:grid;grid-template-columns:120px 1fr 70px 80px;gap:8px;">
+        <span style="color:#555;font-size:9px;text-transform:uppercase;letter-spacing:.1em;">Company</span>
+        <span style="color:#555;font-size:9px;text-transform:uppercase;letter-spacing:.1em;">Role</span>
+        <span style="color:#555;font-size:9px;text-transform:uppercase;letter-spacing:.1em;">Status</span>
+        <span style="color:#555;font-size:9px;text-transform:uppercase;letter-spacing:.1em;">Applied</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 70px 80px;gap:8px;padding:7px 0;border-bottom:1px solid #1a1a1a;">
+        <span style="color:#e5e5e5;font-weight:600;">Anthropic</span>
+        <span style="color:#888;">Software Engineer, AI</span>
+        <span style="background:#3b82f620;color:#60a5fa;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;">Applied</span>
+        <span style="color:#555;font-size:9px;">2d ago</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 70px 80px;gap:8px;padding:7px 0;border-bottom:1px solid #1a1a1a;">
+        <span style="color:#e5e5e5;font-weight:600;">Stripe</span>
+        <span style="color:#888;">Backend Engineer</span>
+        <span style="background:#10b98120;color:#10b981;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;">Interview</span>
+        <span style="color:#555;font-size:9px;">5d ago</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">State 2 — Form expanded (after clicking "+ Add")</span>
+  <div class="mockup">
+    <div class="mockup-header">Applications Panel — Add form open</div>
+    <div class="mockup-body" style="font-family:monospace;font-size:11px;padding:12px;">
+      <!-- Panel header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="color:#fff;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">Applications</span>
+        <button style="background:transparent;border:none;color:#555;font-size:10px;cursor:pointer;">✕ Cancel</button>
+      </div>
+
+      <!-- Inline form -->
+      <div style="background:#0d1520;border:1px solid #3b82f625;border-radius:6px;padding:10px;margin-bottom:10px;">
+
+        <!-- Simplify URL row -->
+        <div style="margin-bottom:8px;">
+          <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Simplify URL <span style="color:#444;">(optional — auto-fills fields)</span></div>
+          <div style="display:flex;gap:4px;">
+            <div style="flex:1;background:#111;border:1px solid #333;border-radius:4px;padding:4px 7px;font-size:10px;color:#555;">https://simplify.jobs/p/...</div>
+            <div style="background:#1e2a3a;border:1px solid #3b82f640;border-radius:4px;padding:4px 8px;font-size:10px;color:#60a5fa;">Fetch</div>
+          </div>
+        </div>
+
+        <!-- After fetch: fields pre-filled -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+          <div>
+            <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Company</div>
+            <div style="background:#111;border:1px solid #60a5fa40;border-radius:4px;padding:4px 7px;font-size:10px;color:#e5e5e5;">Vercel</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Role</div>
+            <div style="background:#111;border:1px solid #60a5fa40;border-radius:4px;padding:4px 7px;font-size:10px;color:#e5e5e5;">Software Engineer</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+          <div>
+            <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Status</div>
+            <div style="background:#111;border:1px solid #333;border-radius:4px;padding:4px 7px;font-size:10px;color:#888;">Applied ▾</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Date Applied</div>
+            <div style="background:#111;border:1px solid #333;border-radius:4px;padding:4px 7px;font-size:10px;color:#888;">2026-05-31</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Notes <span style="color:#444;">(optional)</span></div>
+          <div style="background:#111;border:1px solid #333;border-radius:4px;padding:4px 7px;font-size:10px;color:#555;height:28px;"></div>
+        </div>
+
+        <!-- Blue highlighted = auto-filled from Simplify -->
+        <div style="font-size:9px;color:#60a5fa;margin-bottom:8px;">↑ Blue borders = auto-filled from Simplify</div>
+
+        <div style="display:flex;justify-content:flex-end;">
+          <div style="background:#3b82f6;border-radius:4px;padding:4px 12px;font-size:10px;color:#fff;font-weight:600;">Save Application</div>
+        </div>
+      </div>
+
+      <!-- Table rows behind -->
+      <div style="opacity:0.5;font-size:10px;color:#888;border-top:1px solid #1a1a1a;padding-top:8px;">
+        Table rows still visible below...
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <span class="label">Empty state (no Gmail sync message)</span>
+  <div class="mockup">
+    <div class="mockup-body" style="font-family:monospace;font-size:11px;padding:12px;text-align:center;padding:32px;">
+      <div style="font-size:22px;margin-bottom:8px;opacity:0.2;">📋</div>
+      <div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px;">No applications yet</div>
+      <div style="font-size:10px;color:#444;max-width:220px;margin:0 auto;">Click <span style="color:#60a5fa;">+ Add</span> above to log your first application, or paste a Simplify URL to import one.</div>
+    </div>
+  </div>
+</div>
