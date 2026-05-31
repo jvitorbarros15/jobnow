@@ -17,11 +17,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 function statusBadge(status: string): string {
-  if (status === 'offer') return 'bg-green/10 text-green'
-  if (status === 'rejected' || status === 'ghosted') return 'bg-red/10 text-red'
-  if (status === 'interview_scheduled' || status === 'interview_completed') return 'bg-accent/10 text-accent'
-  if (status === 'follow_up_needed') return 'bg-[#fef3c7] text-[#92400e]'
-  if (status === 'applied') return 'bg-surface-2 text-[#4a4540]'
+  if (status === 'offer') return 'bg-green/20 text-green'
+  if (status === 'rejected' || status === 'ghosted') return 'bg-red/20 text-red'
+  if (status === 'interview_scheduled' || status === 'interview_completed') return 'bg-accent/20 text-accent'
+  if (status === 'follow_up_needed') return 'bg-amber/20 text-amber'
+  if (status === 'applied') return 'bg-accent-2/20 text-accent-2'
   return 'bg-surface-2 text-muted'
 }
 
@@ -36,7 +36,7 @@ function CalendarCell({ app }: { app: JobApplication }) {
     )
   }
   if (app.status === 'interview_scheduled') {
-    return <span className="text-accent"><AlertTriangle size={14} /></span>
+    return <span className="text-accent-2"><AlertTriangle size={14} /></span>
   }
   return null
 }
@@ -47,7 +47,7 @@ function InterviewDate({ datetime }: { datetime: string | null }) {
     const parsed = parseISO(datetime)
     return (
       <span>
-        <span className="text-[#1c1a18] font-mono text-xs">{format(parsed, 'MMM d')}</span>
+        <span className="text-text font-mono text-xs">{format(parsed, 'MMM d')}</span>
         <span className="text-muted font-mono text-xs ml-1">{format(parsed, 'h:mm a')}</span>
       </span>
     )
@@ -101,10 +101,10 @@ export default function JobTable({ applications, onDelete }: JobTableProps) {
           {applications.map((app, index) => (
             <tr
               key={app.id}
-              className="border-b border-border/40 hover:bg-surface transition-colors duration-150 group opacity-0"
+              className="border-b border-border/40 hover:bg-white/[0.03] transition-colors duration-150 group opacity-0"
               style={{ animation: `fadeInUp 0.3s ease ${index * 35}ms forwards` }}
             >
-              <td className="py-2.5 px-4 pl-0 font-semibold text-[#171412] text-sm">{app.company ?? <span className="text-muted">—</span>}</td>
+              <td className="py-2.5 px-4 pl-0 font-semibold text-text text-sm">{app.company ?? <span className="text-muted">—</span>}</td>
               <td className="py-2.5 px-4 text-muted text-xs max-w-[160px] truncate">{app.role ?? '—'}</td>
               <td className="py-2.5 px-4">
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold tracking-wide ${statusBadge(app.status)}`}>
@@ -119,7 +119,7 @@ export default function JobTable({ applications, onDelete }: JobTableProps) {
               <td className="py-3.5 px-4 text-right">
                 <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                   {app.gmail_thread_url && (
-                    <a href={app.gmail_thread_url} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-[#1c1a18] transition-colors">
+                    <a href={app.gmail_thread_url} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-accent transition-colors">
                       <Mail size={14} />
                     </a>
                   )}

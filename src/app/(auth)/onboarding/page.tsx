@@ -98,29 +98,15 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#f7f5f2] text-white overflow-hidden flex items-center justify-center">
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 20% 50%, rgba(108, 99, 255, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 80% 80%, rgba(108, 99, 255, 0.05) 0%, transparent 50%),
-              linear-gradient(45deg, transparent 30%, rgba(108, 99, 255, 0.02) 50%, transparent 70%)
-            `,
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 w-full max-w-2xl px-6 py-12">
-        <div className="mb-12 text-center">
-          <h1 className="font-serif text-4xl font-light mb-2 tracking-tight">Welcome to JobMaker</h1>
-          <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30 mb-8" />
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-2xl panel p-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-text font-display text-lg font-bold tracking-tight mb-2">Welcome to JobMaker</h1>
           <p className="text-muted text-sm">Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}</p>
         </div>
 
         {/* Progress Indicator */}
-        <div className="flex justify-center gap-3 mb-12">
+        <div className="flex justify-center gap-3 mb-8">
           {STEPS.map((step, idx) => (
             <div
               key={step.id}
@@ -136,7 +122,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Step Content */}
-        <div className="mb-12 min-h-[400px]">
+        <div className="mb-8 min-h-[400px]">
           {renderStep()}
         </div>
 
@@ -145,7 +131,7 @@ export default function OnboardingPage() {
           <button
             onClick={handleBack}
             disabled={currentStep === 1 || isLoading}
-            className="px-6 py-2 rounded-lg border border-border hover:border-accent hover:bg-surface/50 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed text-white font-medium"
+            className="btn-ghost px-6 py-2 disabled:opacity-30"
           >
             Back
           </button>
@@ -154,7 +140,7 @@ export default function OnboardingPage() {
             <button
               onClick={handleSkip}
               disabled={isLoading}
-              className="px-6 py-2 rounded-lg text-muted hover:text-white transition-colors duration-300 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
+              className="text-muted hover:text-text transition-colors duration-300 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
             >
               Skip
             </button>
@@ -163,7 +149,7 @@ export default function OnboardingPage() {
           <button
             onClick={handleNext}
             disabled={isLoading}
-            className="px-8 py-2 rounded-lg bg-gradient-to-r from-accent to-accent hover:shadow-lg hover:shadow-accent/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-white ml-auto"
+            className="btn-primary px-8 py-2 disabled:opacity-50 ml-auto"
           >
             {isLoading ? 'Loading...' : currentStep === 5 ? 'Complete' : 'Next'}
           </button>

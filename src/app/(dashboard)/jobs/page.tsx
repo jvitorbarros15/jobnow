@@ -96,7 +96,7 @@ export default function JobsPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-[#1c1a18] tracking-tight">Jobs & Resume</h1>
+        <h1 className="font-display text-2xl font-bold text-text tracking-tight">Jobs & Resume</h1>
       </div>
 
       {/* Mode tabs */}
@@ -108,7 +108,7 @@ export default function JobsPage() {
             className={`px-4 py-2.5 text-xs font-sans font-medium whitespace-nowrap transition-all border-b-2 -mb-px ${
               (mode === 'paste') === manualMode
                 ? 'border-accent text-accent'
-                : 'border-transparent text-muted hover:text-[#1c1a18]'
+                : 'border-transparent text-muted hover:text-text'
             }`}
           >
             {label}
@@ -156,7 +156,7 @@ export default function JobsPage() {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-4 py-2.5 text-xs font-sans font-medium capitalize whitespace-nowrap transition-all border-b-2 -mb-px ${
-                      activeTab === tab ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-[#1c1a18]'
+                      activeTab === tab ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-text'
                     }`}
                   >
                     {tab}

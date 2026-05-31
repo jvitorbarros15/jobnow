@@ -25,7 +25,7 @@ export default function DigestEntry({
 
   return (
     <div>
-      <div className="w-full flex items-center justify-between px-4 py-3 transition-all hover:bg-surface-2/10 group">
+      <div className="w-full flex items-center justify-between px-4 py-3 transition-all hover:bg-white/[0.03] group">
         <button
           onClick={onToggle}
           aria-expanded={open}
@@ -33,7 +33,7 @@ export default function DigestEntry({
         >
           <span className={`font-semibold ${accentClass}`}>{slotLabel}</span>
           <span className="text-muted/60">·</span>
-          <span className="text-[#171412] font-medium">{formatDate(date)}</span>
+          <span className="text-text font-medium">{formatDate(date)}</span>
           <span className="text-muted/60">·</span>
           <span className="text-muted text-[10px] tracking-wide">{labelText}</span>
         </button>
@@ -42,7 +42,7 @@ export default function DigestEntry({
           <button
             onClick={onDelete}
             aria-label="Delete digest"
-            className="text-muted/40 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-red-400 rounded-sm p-0.5 cursor-pointer"
+            className="text-muted hover:text-red transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-red-400 rounded-sm p-0.5 cursor-pointer"
           >
             <Trash2 size={13} strokeWidth={2} />
           </button>
@@ -61,8 +61,8 @@ export default function DigestEntry({
       </div>
 
       {open && (
-        <div className="px-4 pb-4 border-t border-border/30 pt-4 bg-surface-2/5">
-          <div className="text-sm leading-7 text-[#2d2a27] whitespace-pre-wrap overflow-x-auto font-sans">
+        <div className="px-4 pb-4 border-t border-glass-border pt-4 bg-white/[0.02]">
+          <div className="text-sm leading-7 text-muted whitespace-pre-wrap overflow-x-auto font-sans">
             {content}
           </div>
         </div>

@@ -108,7 +108,7 @@ export default function TrackerPage() {
       {/* Toast */}
       {toast && (
         <div className={`fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm font-sans shadow-lg ${
-          toast.type === 'success' ? 'bg-surface border-green/25 text-[#171412]' : 'bg-surface border-red/25 text-[#171412]'
+          toast.type === 'success' ? 'bg-surface border-green/25 text-text' : 'bg-surface border-red/25 text-text'
         }`}>
           {toast.type === 'success'
             ? <CheckCircle size={13} className="text-green flex-shrink-0" />
@@ -123,51 +123,51 @@ export default function TrackerPage() {
         style={{ animation: 'fadeInUp 0.35s ease 0ms forwards' }}
       >
         <div className="mb-1">
-          <h1 className="text-3xl font-bold text-[#0C4A6E] tracking-tight" style={{ fontFamily: 'Fira Code, monospace' }}>Job Tracker</h1>
+          <h1 className="text-3xl font-bold text-text font-display tracking-tight">Job Tracker</h1>
         </div>
-        <p className="text-sm text-[#0EA5E9]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>Track applications, interview status, and AI-powered job matches</p>
+        <p className="text-sm text-accent-2">Track applications, interview status, and AI-powered job matches</p>
       </div>
 
       {/* Stats Row */}
       <div className="opacity-0 grid grid-cols-2 lg:grid-cols-4 gap-3" style={{ animation: 'fadeInUp 0.35s ease 60ms forwards' }}>
-        <div className="bg-white rounded border-2 border-[#0369A1] p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+        <div className="panel panel-hover p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Briefcase size={18} className="text-[#0369A1]" />
-            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Active</span>
+            <Briefcase size={18} className="text-accent-2" />
+            <span className="text-xs font-semibold text-muted uppercase tracking-wide">Active</span>
           </div>
-          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.active}</div>
+          <div className="text-2xl font-bold text-text">{stats.active}</div>
         </div>
-        <div className="bg-white rounded border-2 border-[#0EA5E9] p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+        <div className="panel panel-hover p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Calendar size={18} className="text-[#0EA5E9]" />
-            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Interviewing</span>
+            <Calendar size={18} className="text-accent-2" />
+            <span className="text-xs font-semibold text-muted uppercase tracking-wide">Interviewing</span>
           </div>
-          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.interviews}</div>
+          <div className="text-2xl font-bold text-text">{stats.interviews}</div>
         </div>
-        <div className="bg-white rounded border-2 border-[#22C55E] p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+        <div className="panel panel-hover p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Award size={18} className="text-[#22C55E]" />
-            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Offers</span>
+            <Award size={18} className="text-green" />
+            <span className="text-xs font-semibold text-muted uppercase tracking-wide">Offers</span>
           </div>
-          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.offers}</div>
+          <div className="text-2xl font-bold text-text">{stats.offers}</div>
         </div>
-        <div className="bg-white rounded border-2 border-red-400 p-4 transition-colors duration-200 hover:bg-[#F0F9FF]" style={{ fontFamily: 'Fira Sans, sans-serif' }}>
+        <div className="panel panel-hover p-4">
           <div className="flex items-center gap-2 mb-2">
-            <AlertCircle size={18} className="text-red-400" />
-            <span className="text-xs font-semibold text-[#0C4A6E] uppercase tracking-wide">Rejected</span>
+            <AlertCircle size={18} className="text-red" />
+            <span className="text-xs font-semibold text-muted uppercase tracking-wide">Rejected</span>
           </div>
-          <div className="text-2xl font-bold text-[#0C4A6E]">{stats.rejected}</div>
+          <div className="text-2xl font-bold text-text">{stats.rejected}</div>
         </div>
       </div>
 
       {/* Content Grid */}
       <div className="opacity-0 grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6" style={{ animation: 'fadeInUp 0.35s ease 120ms forwards' }}>
         {/* Left Panel: Job Table */}
-        <div className="bg-white rounded border-2 border-[#E0E7FF] p-4">
+        <div className="panel p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-[#0C4A6E] uppercase tracking-wide" style={{ fontFamily: 'Fira Code, monospace' }}>Applications</h2>
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wide font-display">Applications</h2>
             {applications.length > 0 && (
-              <span className="text-xs font-bold text-[#0369A1]">{applications.length}</span>
+              <span className="text-xs font-bold text-accent-2">{applications.length}</span>
             )}
           </div>
           {loading ? (

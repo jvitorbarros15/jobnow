@@ -49,12 +49,12 @@ export default function DraftHistory({ onSelectDraft }: DraftHistoryProps) {
   }
 
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden">
+    <div className="panel overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/80 transition-colors border-b border-border/50"
+        className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.03] transition-colors border-b border-glass-border"
       >
-        <h3 className="text-lg font-semibold">Draft History</h3>
+        <h3 className="text-lg font-semibold text-text">Draft History</h3>
         <ChevronDown
           size={20}
           className={`text-muted transition-transform ${
@@ -64,7 +64,7 @@ export default function DraftHistory({ onSelectDraft }: DraftHistoryProps) {
       </button>
 
       {isOpen && (
-        <div className="divide-y divide-border/50">
+        <div className="divide-y divide-glass-border">
           {loading ? (
             <div className="p-6 space-y-3">
               {[1, 2, 3].map((i) => (
@@ -83,7 +83,7 @@ export default function DraftHistory({ onSelectDraft }: DraftHistoryProps) {
               <button
                 key={draft.id}
                 onClick={() => onSelectDraft(draft)}
-                className="w-full px-6 py-3 text-left hover:bg-surface/80 transition-colors flex items-center justify-between gap-4"
+                className="w-full px-6 py-3 text-left hover:bg-white/[0.03] transition-colors flex items-center justify-between gap-4"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">

@@ -31,10 +31,10 @@ export default function JobCard({ job, onSave, onBuildResume, saved }: JobCardPr
   const extraCount = job.ats_keywords.length - 5
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-4 hover:border-accent/50 transition-colors">
+    <div className="panel p-4 hover:border-accent/50 transition-colors">
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="min-w-0">
-          <h3 className="font-bold text-white truncate">{job.title}</h3>
+          <h3 className="font-bold text-text truncate">{job.title}</h3>
           <p className="text-sm text-muted truncate">{job.company}</p>
         </div>
         <span
@@ -53,7 +53,7 @@ export default function JobCard({ job, onSave, onBuildResume, saved }: JobCardPr
             Remote
           </span>
         )}
-        {job.salary && <span className="text-white font-medium">{job.salary}</span>}
+        {job.salary && <span className="text-text font-medium">{job.salary}</span>}
         <span className="ml-auto">{timeAgo}</span>
       </div>
 
@@ -81,7 +81,7 @@ export default function JobCard({ job, onSave, onBuildResume, saved }: JobCardPr
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border transition-colors ${
             saved
               ? 'bg-accent/20 border-accent/40 text-accent'
-              : 'border-border text-muted hover:border-accent/50 hover:text-white'
+              : 'border-glass-border text-muted hover:border-accent/50 hover:text-text'
           }`}
         >
           {saved ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
@@ -89,7 +89,7 @@ export default function JobCard({ job, onSave, onBuildResume, saved }: JobCardPr
         </button>
         <button
           onClick={onBuildResume}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-accent hover:opacity-90 text-white transition-opacity"
+          className="btn-primary px-3 py-1.5 text-sm"
         >
           <FileText size={14} />
           Build Resume

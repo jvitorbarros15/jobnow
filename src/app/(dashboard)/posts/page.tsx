@@ -72,7 +72,7 @@ export default function PostsPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-[#1c1a18] tracking-tight">LinkedIn Posts</h1>
+        <h1 className="font-display text-2xl font-bold text-text tracking-tight">LinkedIn Posts</h1>
       </div>
 
       <TopicSelector topics={TOPICS} selectedTopic={topic} onSelect={handleSelectTopic} />
@@ -92,7 +92,7 @@ export default function PostsPage() {
           </div>
 
           {newsError && (
-            <div className="border border-red/30 p-3 mb-4">
+            <div className="border border-red/30 p-3 mb-4 rounded">
               <span className="text-xs font-sans text-red">{newsError}</span>
             </div>
           )}
@@ -118,7 +118,7 @@ export default function PostsPage() {
           <button
             onClick={handleGeneratePost}
             disabled={loadingNews || drafting || articles.length === 0}
-            className="w-full mt-6 py-3 bg-accent text-black text-sm font-semibold font-sans flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="btn-primary w-full mt-6 py-3 text-sm"
           >
             {drafting ? <><Loader2 size={15} className="animate-spin" /> Generating…</> : <><Zap size={15} /> Generate Post</>}
           </button>
@@ -127,7 +127,7 @@ export default function PostsPage() {
         {/* Post editor */}
         <div className="lg:col-span-3">
           {draftError && (
-            <div className="border border-red/30 p-3 mb-4">
+            <div className="border border-red/30 p-3 mb-4 rounded">
               <span className="text-xs font-sans text-red">{draftError}</span>
             </div>
           )}
@@ -135,7 +135,7 @@ export default function PostsPage() {
           {currentDraft ? (
             <PostVariants variants={currentDraft.variants} draftId={currentDraft.id} onRegenerate={handleRegenerate} />
           ) : (
-            <div className="border border-border border-dashed flex flex-col items-center justify-center py-24 text-center">
+            <div className="panel border-dashed flex flex-col items-center justify-center py-24 text-center">
               <Zap size={28} className="text-muted mb-4 opacity-40" />
               <p className="text-[10px] font-sans uppercase tracking-[0.15em] text-muted">Ready to draft</p>
               <p className="text-sm text-muted mt-2 max-w-xs">Select a topic and generate a post</p>

@@ -45,11 +45,11 @@ export default function ResumeBuilder({ job, onGenerate, loading, result }: Resu
     <div className="space-y-6 sticky top-6">
       {job ? (
         <div>
-          <p className="font-display text-base font-bold text-[#1c1a18] truncate">{job.title}</p>
+          <p className="font-display text-base font-bold text-text truncate">{job.title}</p>
           <p className="text-xs font-sans text-muted">{job.company}</p>
         </div>
       ) : (
-        <div className="border border-border border-dashed py-8 text-center">
+        <div className="panel border-dashed py-8 text-center">
           <FileText size={20} className="text-muted mx-auto mb-2 opacity-30" />
           <p className="text-xs font-sans text-muted">Select a job to build resume</p>
         </div>
@@ -62,10 +62,10 @@ export default function ResumeBuilder({ job, onGenerate, loading, result }: Resu
             <button
               key={t.value}
               onClick={() => setTemplate(t.value)}
-              className={`text-left p-3 border transition-colors ${
+              className={`text-left p-3 border transition-colors rounded ${
                 template === t.value
-                  ? 'border-accent bg-accent/5 text-[#1c1a18]'
-                  : 'border-border text-muted hover:border-border/80 hover:text-[#1c1a18]'
+                  ? 'border-accent bg-accent/5 text-text'
+                  : 'border-glass-border text-muted hover:border-glass-border/80 hover:text-text'
               }`}
             >
               <p className="text-xs font-sans font-medium">{t.label}</p>
@@ -78,7 +78,7 @@ export default function ResumeBuilder({ job, onGenerate, loading, result }: Resu
       <button
         onClick={() => onGenerate(template)}
         disabled={!job || loading}
-        className="w-full py-3 bg-accent text-black text-sm font-semibold font-sans flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="btn-primary w-full py-3 text-sm"
       >
         {loading ? <><Loader2 size={15} className="animate-spin" /> Generating…</> : <><FileText size={15} /> Generate Resume</>}
       </button>
@@ -104,7 +104,7 @@ export default function ResumeBuilder({ job, onGenerate, loading, result }: Resu
               {savedResumes.map((r) => (
                 <div key={r.id} className="flex items-center justify-between gap-2 py-2.5 border-b border-border/40">
                   <div className="min-w-0">
-                    <p className="text-xs font-sans text-[#1c1a18] truncate">{r.job_title ?? 'Untitled'}{r.company ? ` — ${r.company}` : ''}</p>
+                    <p className="text-xs font-sans text-text truncate">{r.job_title ?? 'Untitled'}{r.company ? ` — ${r.company}` : ''}</p>
                     <p className="text-[10px] font-mono text-muted">
                       {r.keyword_match_score != null ? `${r.keyword_match_score}% · ` : ''}
                       {formatDistanceToNow(new Date(r.created_at), { addSuffix: true })}

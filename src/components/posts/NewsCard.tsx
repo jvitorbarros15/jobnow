@@ -5,9 +5,9 @@ import { ExternalLink } from 'lucide-react'
 import type { NewsArticle } from '@/types/posts'
 
 const sourceColors: Record<string, string> = {
-  NewsAPI: 'text-[#60a5fa]',
+  NewsAPI: 'text-cyan',
   HackerNews: 'text-accent',
-  CryptoPanic: 'text-[#c084fc]',
+  CryptoPanic: 'text-accent-2',
 }
 
 export default function NewsCard({ article }: { article: NewsArticle }) {
@@ -29,7 +29,7 @@ export default function NewsCard({ article }: { article: NewsArticle }) {
         <span className="text-[9px] font-mono text-muted">{timeAgo}</span>
       </div>
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-sm text-[#1c1a18] line-clamp-2 leading-snug group-hover:text-accent transition-colors">
+        <h3 className="text-sm text-text line-clamp-2 leading-snug group-hover:text-accent transition-colors">
           {article.title}
         </h3>
         <ExternalLink size={12} className="text-muted flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />

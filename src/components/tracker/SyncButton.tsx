@@ -31,9 +31,9 @@ export default function SyncButton({ onSyncComplete, onError, onSyncStart }: Syn
     <button
       onClick={handleSync}
       disabled={loading}
-      className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-xs font-semibold font-sans rounded-lg transition-all duration-150 hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      className="btn-primary px-4 py-2 text-xs font-semibold"
     >
-      {loading ? <Loader2 size={15} className="animate-spin" /> : <Mail size={15} />}
+      {loading ? <Loader2 size={15} className="animate-spin text-muted" /> : <Mail size={15} />}
       {loading ? 'Syncing…' : 'Sync Gmail'}
     </button>
   )

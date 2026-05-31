@@ -21,23 +21,23 @@ export default function JobSearchForm({ onSearch, loading }: JobSearchFormProps)
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-surface border border-border rounded-lg p-6 space-y-4"
+      className="panel p-6 space-y-4"
     >
-      <h3 className="font-semibold">Search Jobs</h3>
+      <h3 className="font-semibold text-text">Search Jobs</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           type="text"
           placeholder="Job Title / Keywords"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-surface border border-border text-white focus:border-accent focus:outline-none transition-colors placeholder-muted/50"
+          className="px-4 py-2 rounded-lg bg-white/[0.05] border border-glass-border text-text focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors placeholder:text-muted/50"
         />
         <input
           type="text"
           placeholder="Remote, New York, etc."
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-surface border border-border text-white focus:border-accent focus:outline-none transition-colors placeholder-muted/50"
+          className="px-4 py-2 rounded-lg bg-white/[0.05] border border-glass-border text-text focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors placeholder:text-muted/50"
         />
       </div>
       <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -45,14 +45,14 @@ export default function JobSearchForm({ onSearch, loading }: JobSearchFormProps)
           type="checkbox"
           checked={remote}
           onChange={(e) => setRemote(e.target.checked)}
-          className="w-4 h-4 rounded bg-surface border border-border checked:bg-accent checked:border-accent cursor-pointer"
+          className="w-4 h-4 rounded bg-white/[0.05] border border-glass-border checked:bg-accent checked:border-accent cursor-pointer"
         />
-        <span className="text-sm">Remote positions only</span>
+        <span className="text-sm text-text">Remote positions only</span>
       </label>
       <button
         type="submit"
         disabled={loading || !query.trim()}
-        className="w-full py-2 px-4 rounded-lg bg-accent hover:opacity-90 transition-opacity font-medium text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full py-2 px-4 text-sm"
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
         {loading ? 'Searching...' : 'Search'}

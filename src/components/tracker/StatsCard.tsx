@@ -36,14 +36,14 @@ export default function StatsCard({ icon: Icon, label, value, delay = 0 }: Stats
 
   return (
     <div
-      className="bg-surface border border-border rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-lg hover:scale-[1.025] hover:-translate-y-0.5 transition-all duration-200 cursor-default opacity-0"
+      className="panel panel-hover p-5 flex items-center gap-4 opacity-0"
       style={{ animation: `fadeInUp 0.4s ease ${delay}ms forwards` }}
     >
-      <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0 transition-colors duration-200 group-hover:bg-accent/20">
+      <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
         <Icon size={18} className="text-accent" />
       </div>
       <div>
-        <p className="font-display text-3xl font-bold text-[#1c1a18] leading-none tabular-nums">
+        <p className="font-display text-3xl font-bold text-text leading-none tabular-nums">
           {displayValue}
         </p>
         <p className="text-[10px] font-sans text-muted uppercase tracking-[0.15em] mt-1.5">

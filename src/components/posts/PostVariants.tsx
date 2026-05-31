@@ -62,7 +62,7 @@ export default function PostVariants({ variants, draftId, onRegenerate }: PostVa
             value={selectedVariant.content}
             readOnly
             rows={14}
-            className="w-full bg-surface border border-border p-4 text-sm font-sans text-[#1c1a18] leading-relaxed resize-none focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-white/[0.02] border border-glass-border rounded p-4 text-sm font-sans text-text leading-relaxed resize-none focus:outline-none focus:border-accent/50 transition-colors"
           />
           <div className="flex items-center justify-between">
             <span className={`font-mono text-xs ${isOverLimit ? 'text-red' : 'text-muted'}`}>
@@ -72,7 +72,7 @@ export default function PostVariants({ variants, draftId, onRegenerate }: PostVa
               <button
                 onClick={handleRegenerate}
                 disabled={regenerating}
-                className="inline-flex items-center gap-1.5 px-3 py-2 border border-border text-muted hover:text-[#1c1a18] hover:border-border/80 text-xs font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-ghost px-3 py-2 text-xs"
               >
                 {regenerating ? <Loader2 size={12} className="animate-spin" /> : <RotateCcw size={12} />}
                 Regenerate
@@ -80,7 +80,7 @@ export default function PostVariants({ variants, draftId, onRegenerate }: PostVa
               <button
                 onClick={handleCopy}
                 disabled={regenerating}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-black text-xs font-semibold font-sans transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary px-4 py-2 text-xs"
               >
                 <Copy size={12} />
                 {copied ? 'Copied' : 'Copy'}

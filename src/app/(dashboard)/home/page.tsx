@@ -43,16 +43,16 @@ export default async function HomePage() {
         className="flex items-baseline justify-between opacity-0"
         style={{ animation: 'fadeInUp 0.35s ease 0ms forwards' }}
       >
-        <h1 className="font-display text-2xl font-bold text-[#171412] tracking-tight">Home</h1>
+        <h1 className="font-display text-2xl font-bold text-text tracking-tight">Home</h1>
         {active.length > 0 && (
           <div className="flex items-center gap-2.5 text-xs font-mono text-muted">
             <span>
-              <span className="font-semibold text-[#171412]">{active.length}</span>
+              <span className="font-semibold text-text">{active.length}</span>
               <span className="ml-1">applied</span>
             </span>
             {interviews.length > 0 && (
               <>
-                <span className="text-border select-none">·</span>
+                <span className="text-muted-2 select-none">·</span>
                 <span>
                   <span className="font-semibold text-accent">{interviews.length}</span>
                   <span className="ml-1">interviewing</span>
@@ -61,9 +61,9 @@ export default async function HomePage() {
             )}
             {offers.length > 0 && (
               <>
-                <span className="text-border select-none">·</span>
+                <span className="text-muted-2 select-none">·</span>
                 <span>
-                  <span className="font-semibold text-green">{offers.length}</span>
+                  <span className="font-semibold text-text">{offers.length}</span>
                   <span className="ml-1">{offers.length === 1 ? 'offer' : 'offers'}</span>
                 </span>
               </>
