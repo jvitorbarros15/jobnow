@@ -12,25 +12,21 @@ interface NavLinkProps {
 
 export default function NavLink({ href, label, icon: Icon }: NavLinkProps) {
   const pathname = usePathname()
-  const isActive = pathname.startsWith(href)
+  const active = pathname === href || pathname.startsWith(href + '/')
 
   return (
     <Link
       href={href}
-      title={label}
-      className={`relative group w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-150 cursor-pointer ${
-        isActive
-          ? 'text-white bg-[#252220]'
-          : 'text-[#4a4743] hover:text-[#c8c4be] hover:bg-[#1e1c1a]'
+      aria-current={active ? 'page' : undefined}
+      className={`group/nav relative flex items-center gap-3 h-10 rounded-[10px] px-3 transition-colors duration-200 cursor-pointer ${
+        active ? 'text-text bg-white/[0.06]' : 'text-muted hover:text-text hover:bg-white/[0.04]'
       }`}
     >
-      {isActive && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-accent rounded-r-full" />
+      {active && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-accent shadow-[0_0_12px_rgba(124,92,255,0.8)]" />
       )}
-      <Icon size={16} strokeWidth={isActive ? 2 : 1.5} />
-
-      {/* Tooltip */}
-      <span className="absolute left-full ml-3 px-2.5 py-1.5 bg-[#f9f8f7] border border-border text-[#171412] text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-50 rounded-lg shadow-md">
+      <Icon size={18} strokeWidth={1.75} className="flex-shrink-0" />
+      <span className="text-sm font-medium whitespace-nowrap opacity-0 group-hover/side:opacity-100 transition-opacity duration-200">
         {label}
       </span>
     </Link>

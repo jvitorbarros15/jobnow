@@ -44,44 +44,58 @@ export default function Sidebar({ userEmail, gmailConnected }: SidebarProps) {
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-14 bg-sidebar z-40 flex flex-col items-center py-4">
-      {/* Logo */}
-      <div className="w-7 h-7 bg-accent rounded flex items-center justify-center mb-8 flex-shrink-0">
-        <span className="font-display text-[11px] font-bold text-white tracking-tight">JN</span>
+    <aside className="group/side fixed left-0 top-0 h-screen w-16 hover:w-56 z-40 flex flex-col py-4 px-3 bg-sidebar/80 backdrop-blur-xl border-r border-glass-border transition-[width] duration-200 ease-out overflow-hidden">
+      {/* Brand */}
+      <div className="flex items-center gap-3 h-9 px-1 mb-6 flex-shrink-0">
+        <div className="w-9 h-9 rounded-[10px] bg-accent flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(124,92,255,0.45)]">
+          <span className="font-display text-sm font-bold text-[#0b0b12] tracking-tight">JN</span>
+        </div>
+        <span className="font-display text-base font-semibold text-text whitespace-nowrap opacity-0 group-hover/side:opacity-100 transition-opacity duration-200">
+          JobNow
+        </span>
       </div>
 
-      {/* Nav */}
-      <nav className="flex flex-col items-center gap-0.5 flex-1">
+      <nav className="flex flex-col gap-1 flex-1">
         {navItems.map((item) => (
           <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} />
         ))}
       </nav>
 
-      {/* Bottom */}
-      <div className="flex flex-col items-center gap-0.5">
+      <div className="flex flex-col gap-1 border-t border-glass-border pt-3">
         <button
           onClick={gmailConnected ? undefined : handleConnectGmail}
-          title={gmailConnected ? 'Gmail connected' : 'Connect Gmail'}
-          className="relative p-2.5 text-[#4a4743] hover:text-[#c8c4be] transition-colors duration-150 disabled:cursor-default cursor-pointer"
           disabled={gmailConnected}
+          aria-label={gmailConnected ? 'Gmail connected' : 'Connect Gmail'}
+          className="relative flex items-center gap-3 h-10 rounded-[10px] px-3 text-muted hover:text-text hover:bg-white/[0.04] transition-colors duration-200 disabled:cursor-default cursor-pointer"
         >
-          <Mail size={14} strokeWidth={1.5} />
-          <span className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${gmailConnected ? 'bg-green' : 'bg-accent'}`} />
+          <Mail size={18} strokeWidth={1.75} className="flex-shrink-0" />
+          <span className={`absolute top-2.5 left-7 w-1.5 h-1.5 rounded-full ${gmailConnected ? 'bg-green' : 'bg-amber'}`} />
+          <span className="text-sm font-medium whitespace-nowrap opacity-0 group-hover/side:opacity-100 transition-opacity duration-200">
+            {gmailConnected ? 'Gmail linked' : 'Connect Gmail'}
+          </span>
         </button>
 
-        <div
-          className="w-6 h-6 rounded-full bg-[#252220] border border-[#352f2a] flex items-center justify-center text-[9px] font-semibold text-[#c8c4be] font-sans"
-          title={userEmail}
-        >
-          {getInitials(userEmail)}
+        <div className="flex items-center gap-3 h-10 px-3">
+          <div
+            className="w-7 h-7 rounded-full bg-surface-2 border border-glass-border flex items-center justify-center text-[10px] font-semibold text-text font-sans flex-shrink-0"
+            title={userEmail}
+          >
+            {getInitials(userEmail)}
+          </div>
+          <span className="text-xs text-muted truncate whitespace-nowrap opacity-0 group-hover/side:opacity-100 transition-opacity duration-200">
+            {userEmail}
+          </span>
         </div>
 
         <button
           onClick={handleSignOut}
-          title="Sign out"
-          className="p-2.5 text-[#4a4743] hover:text-[#c8c4be] transition-colors duration-150 cursor-pointer"
+          aria-label="Sign out"
+          className="flex items-center gap-3 h-10 rounded-[10px] px-3 text-muted hover:text-red hover:bg-white/[0.04] transition-colors duration-200 cursor-pointer"
         >
-          <LogOut size={14} strokeWidth={1.5} />
+          <LogOut size={18} strokeWidth={1.75} className="flex-shrink-0" />
+          <span className="text-sm font-medium whitespace-nowrap opacity-0 group-hover/side:opacity-100 transition-opacity duration-200">
+            Sign out
+          </span>
         </button>
       </div>
     </aside>
