@@ -75,9 +75,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data as JobApplication, { status: 201 })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: `Failed to create application: ${message}` },
+      { error: 'Failed to create application' },
       { status: 500 }
     )
   }
