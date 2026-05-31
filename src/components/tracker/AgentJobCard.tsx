@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ExternalLink, Plus, Check } from 'lucide-react'
+import { ExternalLink, Plus, Check, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { AgentJobResult } from '@/types/jobs'
 
@@ -32,8 +32,29 @@ function priorityDot(priority: string): string {
 export default function AgentJobCard({ job, index, onSaved }: Props) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const sponsor = sponsorshipBadge(job.sponsorship_status)
   const locationText = job.remote ? 'Remote' : job.location
+
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      await supabase.from('job_applications')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('url', job.url)
+
+      onSaved?.()
+    } catch (error) {
+      console.error('Failed to delete job:', error)
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   async function handleSaveToTracker() {
     setSaving(true)
@@ -41,6 +62,10 @@ export default function AgentJobCard({ job, index, onSaved }: Props) {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+
+      const now = new Date()
+      const dateFolder = now.toISOString().split('T')[0] // YYYY-MM-DD
+      const timestamp = now.toISOString()
 
       await supabase.from('job_applications').insert({
         user_id: user.id,
@@ -53,6 +78,9 @@ export default function AgentJobCard({ job, index, onSaved }: Props) {
         fit_score: job.fit_score,
         sponsorship: job.sponsorship_status,
         description: job.fit_summary,
+        saved_from_agent: true,
+        agent_run_date: dateFolder,
+        agent_saved_at: timestamp,
       })
 
       setSaved(true)
@@ -67,11 +95,21 @@ export default function AgentJobCard({ job, index, onSaved }: Props) {
 
   return (
     <div
-      className="bg-surface border border-border rounded-lg p-4 opacity-0"
+      className="bg-surface border border-border rounded-lg p-4 opacity-0 group relative"
       style={{ animation: `fadeInUp 0.3s ease ${index * 100}ms forwards` }}
     >
-      {/* Priority dot */}
-      <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${priorityDot(job.priority)}`} />
+      {/* Priority dot + delete button */}
+      <div className="absolute top-2 right-2 flex items-center gap-1.5">
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:text-red disabled:opacity-50"
+          title="Delete this job"
+        >
+          <X size={12} />
+        </button>
+        <div className={`w-1.5 h-1.5 rounded-full ${priorityDot(job.priority)}`} />
+      </div>
 
       {/* Header row: company/role on left, fit score on right */}
       <div className="flex items-start justify-between mb-3">
@@ -86,7 +124,7 @@ export default function AgentJobCard({ job, index, onSaved }: Props) {
 
       {/* Info pills row */}
       <div className="flex gap-2 mb-3 flex-wrap">
-        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-surface-2 font-mono text-[10px] text-[#171412]">
+        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-white/[0.05] border border-glass-border font-mono text-[10px] text-text">
           {locationText}
         </span>
         <span className={`inline-flex items-center px-2.5 py-1 rounded-md font-mono text-[10px] ${sponsor.bg} ${sponsor.text}`}>
