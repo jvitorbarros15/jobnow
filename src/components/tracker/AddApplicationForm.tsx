@@ -8,6 +8,18 @@ interface AddApplicationFormProps {
   onSuccess: (app: JobApplication) => void
 }
 
+const todayISO = () => new Date().toISOString().split('T')[0]
+
+const STATUS_OPTIONS = [
+  { value: 'applied', label: 'Applied' },
+  { value: 'interview_scheduled', label: 'Interview Scheduled' },
+  { value: 'interview_completed', label: 'Interview Completed' },
+  { value: 'offer', label: 'Offer' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'ghosted', label: 'Ghosted' },
+  { value: 'follow_up_needed', label: 'Follow-up Needed' },
+] as const
+
 export default function AddApplicationForm({ onSuccess }: AddApplicationFormProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -19,7 +31,7 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
     company: '',
     role: '',
     status: 'applied' as const,
-    date: new Date().toISOString().split('T')[0],
+    date: todayISO(),
     notes: '',
   })
 
@@ -97,7 +109,7 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
         company: '',
         role: '',
         status: 'applied',
-        date: new Date().toISOString().split('T')[0],
+        date: todayISO(),
         notes: '',
       })
       setAutoFilledFields(new Set())
@@ -116,7 +128,10 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
           {isExpanded ? 'Add Application' : 'New Application'}
         </span>
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => {
+            setIsExpanded(!isExpanded)
+            if (isExpanded) setError(null)
+          }}
           className="flex items-center gap-2 text-xs text-accent-2 hover:text-accent transition-colors"
         >
           {isExpanded ? '✕ Cancel' : '+ Add'}
@@ -129,11 +144,12 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
         <div className="bg-surface-2/30 border-b border-border p-4 space-y-4">
           {/* Simplify URL */}
           <div>
-            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
+            <label htmlFor="simplifyUrl" className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
               Simplify URL <span className="text-muted/50">(optional — auto-fills fields)</span>
             </label>
             <div className="flex gap-2">
               <input
+                id="simplifyUrl"
                 type="text"
                 value={formData.simplifyUrl}
                 onChange={(e) => setFormData(prev => ({ ...prev, simplifyUrl: e.target.value }))}
@@ -153,10 +169,11 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
           {/* Company & Role (2-col) */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
+              <label htmlFor="company" className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
                 Company
               </label>
               <input
+                id="company"
                 type="text"
                 value={formData.company}
                 onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
@@ -167,10 +184,11 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
               />
             </div>
             <div>
-              <label className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
+              <label htmlFor="role" className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
                 Role
               </label>
               <input
+                id="role"
                 type="text"
                 value={formData.role}
                 onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
@@ -185,28 +203,31 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
           {/* Status & Date (2-col) */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
+              <label htmlFor="status" className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
                 Status
               </label>
               <select
+                id="status"
                 value={formData.status}
-                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as any }))}
+                onChange={(e) => {
+                  const newStatus = e.target.value as typeof formData.status
+                  setFormData(prev => ({ ...prev, status: newStatus }))
+                }}
                 className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text focus:outline-none focus:border-accent/50"
               >
-                <option value="applied">Applied</option>
-                <option value="interview_scheduled">Interview Scheduled</option>
-                <option value="interview_completed">Interview Completed</option>
-                <option value="offer">Offer</option>
-                <option value="rejected">Rejected</option>
-                <option value="ghosted">Ghosted</option>
-                <option value="follow_up_needed">Follow-up Needed</option>
+                {STATUS_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
+              <label htmlFor="dateApplied" className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
                 Date Applied
               </label>
               <input
+                id="dateApplied"
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
@@ -217,10 +238,11 @@ export default function AddApplicationForm({ onSuccess }: AddApplicationFormProp
 
           {/* Notes */}
           <div>
-            <label className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
+            <label htmlFor="notes" className="text-[10px] font-semibold text-muted uppercase tracking-wide block mb-2">
               Notes <span className="text-muted/50">(optional)</span>
             </label>
             <textarea
+              id="notes"
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text placeholder:text-muted/50 focus:outline-none focus:border-accent/50 resize-none"
