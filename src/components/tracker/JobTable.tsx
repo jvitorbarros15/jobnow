@@ -75,7 +75,7 @@ export default function JobTable({ applications, onDelete }: JobTableProps) {
       <div className="flex flex-col items-center justify-center text-center py-24">
         <Inbox size={32} className="text-muted mb-4 opacity-30" />
         <p className="text-[10px] font-sans uppercase tracking-[0.15em] text-muted">No applications yet</p>
-        <p className="text-muted text-sm mt-2 max-w-xs">Click Sync Gmail to import job applications from your inbox</p>
+        <p className="text-muted text-sm mt-2 max-w-xs">Click <span className="text-accent-2 font-semibold">+ Add</span> above to log your first application, or paste a Simplify URL to import one.</p>
       </div>
     )
   }
