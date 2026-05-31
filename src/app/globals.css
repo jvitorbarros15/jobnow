@@ -1,38 +1,128 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #f9f8f7;
-  --color-surface:    #ffffff;
-  --color-surface-2:  #f3f2f0;
-  --color-sidebar:    #131211;
-  --color-border:     #e6e3df;
-  --color-accent:     #c47d00;
-  --color-green:      #16a34a;
-  --color-red:        #dc2626;
-  --color-muted:      #8c8884;
+  /* Canvas & surfaces */
+  --color-background:    #0a0a0f;
+  --color-surface:       #12131c;
+  --color-surface-2:     #181a26;
+  --color-sidebar:       #0c0d14;
+  --color-border:        #23252f;
+  --color-glass:         rgba(255, 255, 255, 0.04);
+  --color-glass-border:  rgba(255, 255, 255, 0.08);
 
-  --font-sans:    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-  --font-display: "Georgia", serif;
-  --font-mono:    "Courier New",  monospace;
+  /* Accents */
+  --color-accent:        #7c5cff;
+  --color-accent-2:      #22d3ee;
+  --color-green:         #34d399;
+  --color-red:           #fb7185;
+  --color-amber:         #fbbf24;
+
+  /* Text */
+  --color-text:          #e7e8f0;
+  --color-muted:         #9aa3b2;
+  --color-muted-2:       #6b7280;
+
+  /* Type (vars set by next/font in layout.tsx) */
+  --font-display: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+  --font-sans:    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    var(--font-jetbrains-mono), "JetBrains Mono", "Courier New", monospace;
+
+  --radius: 14px;
 }
 
 @layer base {
+  html { color-scheme: dark; }
+
   body {
-    background-color: #f9f8f7;
-    color: #171412;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
   }
 
-  * {
-    border-color: #e6e3df;
+  * { border-color: var(--color-border); }
+
+  /* Ambient glow field behind everything */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 60rem at 0% 0%,   rgba(124, 92, 255, 0.10), transparent 60%),
+      radial-gradient(50rem 50rem at 100% 100%, rgba(34, 211, 238, 0.08), transparent 60%);
   }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-background), 0 0 0 3px var(--color-accent);
+    border-radius: 8px;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #2a2d3a; border-radius: 999px; border: 2px solid var(--color-background); }
+  ::-webkit-scrollbar-thumb:hover { background: #353948; }
+  ::selection { background: rgba(124, 92, 255, 0.35); color: #fff; }
 }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeInLeft {
   from { opacity: 0; transform: translateX(-6px); }
-  to   { opacity: 1; transform: translateX(0);    }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--color-glass);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .panel-hover { transition: background-color .2s ease, border-color .2s ease; }
+  .panel-hover:hover { background: var(--color-surface-2); border-color: #2e313e; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    background: var(--color-accent); color: #0b0b12;
+    font-weight: 600; border-radius: 10px;
+    transition: box-shadow .2s ease, filter .2s ease;
+    cursor: pointer;
+  }
+  .btn-primary:hover:not(:disabled) { box-shadow: 0 0 24px rgba(124, 92, 255, 0.45); filter: brightness(1.05); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    background: transparent; color: var(--color-text);
+    border: 1px solid var(--color-border); border-radius: 10px;
+    transition: background-color .2s ease, border-color .2s ease; cursor: pointer;
+  }
+  .btn-ghost:hover:not(:disabled) { background: var(--color-surface-2); border-color: #2e313e; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: .375rem;
+    border-radius: 999px; border: 1px solid var(--color-glass-border);
+    background: var(--color-glass); padding: .25rem .625rem;
+    font-size: 11px; color: var(--color-muted);
+  }
 }
