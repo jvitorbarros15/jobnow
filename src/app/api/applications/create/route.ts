@@ -11,6 +11,9 @@ interface CreateApplicationBody {
   gmail_thread_url: string | null
 }
 
+const VALID_STATUSES = ['applied', 'interview_scheduled', 'interview_completed', 'offer', 'rejected', 'ghosted', 'follow_up_needed']
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerClient()
@@ -25,9 +28,26 @@ export async function POST(req: NextRequest) {
 
     const body: CreateApplicationBody = await req.json()
 
-    if (!body.company || !body.role) {
+    const company = body.company?.trim()
+    const role = body.role?.trim()
+    if (!company || !role) {
       return NextResponse.json(
         { error: 'Company and role are required' },
+        { status: 400 }
+      )
+    }
+
+    const status = body.status || 'applied'
+    if (!VALID_STATUSES.includes(status)) {
+      return NextResponse.json(
+        { error: 'Invalid status' },
+        { status: 400 }
+      )
+    }
+
+    if (body.date && !DATE_REGEX.test(body.date)) {
+      return NextResponse.json(
+        { error: 'Invalid date format, use YYYY-MM-DD' },
         { status: 400 }
       )
     }
@@ -36,9 +56,9 @@ export async function POST(req: NextRequest) {
       .from('job_applications')
       .insert({
         user_id: user.id,
-        company: body.company,
-        role: body.role,
-        status: body.status || 'applied',
+        company: company,
+        role: role,
+        status: status,
         date: body.date || new Date().toISOString().split('T')[0],
         notes: body.notes || null,
         gmail_thread_url: body.gmail_thread_url || null,
@@ -48,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       return NextResponse.json(
-        { error: `Database error: ${error.message}` },
+        { error: 'Failed to create application' },
         { status: 500 }
       )
     }
