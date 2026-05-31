@@ -27,7 +27,7 @@ export default function KeywordScore({ score, matched, missing }: KeywordScorePr
           <p className="text-[9px] font-sans uppercase tracking-[0.15em] text-green mb-2">Matched</p>
           <div className="flex flex-wrap gap-1.5">
             {matched.map((kw) => (
-              <span key={kw} className="text-[10px] font-mono text-green border border-green/25 px-1.5 py-0.5">
+              <span key={kw} className="flex items-center gap-2 px-2 py-1 bg-white/[0.03] rounded text-muted text-xs text-green border border-green/25">
                 {kw}
               </span>
             ))}
@@ -40,7 +40,7 @@ export default function KeywordScore({ score, matched, missing }: KeywordScorePr
           <p className="text-[9px] font-sans uppercase tracking-[0.15em] text-red mb-2">Missing</p>
           <div className="flex flex-wrap gap-1.5">
             {missing.map((kw) => (
-              <span key={kw} className="text-[10px] font-mono text-red border border-red/25 px-1.5 py-0.5">
+              <span key={kw} className="flex items-center gap-2 px-2 py-1 bg-white/[0.03] rounded text-muted text-xs text-red border border-red/25">
                 {kw}
               </span>
             ))}

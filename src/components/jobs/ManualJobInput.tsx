@@ -34,7 +34,7 @@ export default function ManualJobInput({ onGenerate, loading }: ManualJobInputPr
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             placeholder="Coinbase"
-            className="w-full px-0 py-2 bg-transparent border-b border-border text-[#1c1a18] text-sm font-sans placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-0 py-2 bg-transparent border-b border-glass-border text-text text-sm font-sans placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors"
           />
         </div>
         <div>
@@ -44,7 +44,7 @@ export default function ManualJobInput({ onGenerate, loading }: ManualJobInputPr
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Senior Software Engineer"
-            className="w-full px-0 py-2 bg-transparent border-b border-border text-[#1c1a18] text-sm font-sans placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-0 py-2 bg-transparent border-b border-glass-border text-text text-sm font-sans placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function ManualJobInput({ onGenerate, loading }: ManualJobInputPr
           onChange={(e) => setDescription(e.target.value)}
           rows={14}
           placeholder="Paste the full job description here..."
-          className="w-full px-0 py-2 bg-transparent border-b border-border text-[#1c1a18] text-sm font-sans leading-relaxed placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors resize-none"
+          className="w-full px-0 py-2 bg-transparent border-b border-glass-border text-text text-sm font-sans leading-relaxed placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors resize-none"
         />
       </div>
 
@@ -67,10 +67,10 @@ export default function ManualJobInput({ onGenerate, loading }: ManualJobInputPr
             <button
               key={t.value}
               onClick={() => setTemplate(t.value)}
-              className={`text-left p-3 border transition-colors ${
+              className={`text-left p-3 border transition-colors rounded ${
                 template === t.value
-                  ? 'border-accent bg-accent/5 text-[#1c1a18]'
-                  : 'border-border text-muted hover:border-border/80 hover:text-[#1c1a18]'
+                  ? 'border-accent bg-accent/5 text-text'
+                  : 'border-glass-border text-muted hover:border-glass-border/80 hover:text-text'
               }`}
             >
               <p className="text-xs font-sans font-medium">{t.label}</p>
@@ -83,7 +83,7 @@ export default function ManualJobInput({ onGenerate, loading }: ManualJobInputPr
       <button
         onClick={() => onGenerate(company.trim(), title.trim(), description.trim(), template)}
         disabled={!canSubmit}
-        className="w-full py-3 bg-accent text-black text-sm font-semibold font-sans flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="btn-primary w-full py-3 text-sm"
       >
         {loading ? (
           <><Loader2 size={15} className="animate-spin" /> Generating resume…</>
