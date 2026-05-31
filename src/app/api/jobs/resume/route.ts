@@ -9,7 +9,7 @@ import type { JobCategory } from '@/types/jobs'
 
 function readDoc(filename: string): string {
   try {
-    return fs.readFileSync(path.join(process.cwd(), 'docs', filename), 'utf-8')
+    return fs.readFileSync(path.join(process.cwd(), 'content', filename), 'utf-8')
   } catch {
     return ''
   }
