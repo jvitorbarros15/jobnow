@@ -128,6 +128,18 @@ export async function POST(request: NextRequest) {
 
     const userPrompt = `Run a fresh job search following your complete protocol. Search all sources in your instructions.${dedupeNote}
 
+**CRITICAL:** Every URL must be a REAL, WORKING link to an actual job posting. Do NOT include:
+- Generic company career page URLs
+- Placeholder URLs
+- Made-up URLs
+- URLs you haven't verified
+
+Only include direct job application links like:
+- https://apply.workable.com/company/j/ABC123/
+- https://boards.greenhouse.io/company/jobs/123456
+- https://linkedin.com/jobs/view/123456789
+- Direct apply links from Indeed, Wellfound, etc.
+
 After completing your research, output your findings in your standard format, then close with this exact JSON block:
 \`\`\`json
 {
@@ -152,7 +164,7 @@ After completing your research, output your findings in your standard format, th
 }
 \`\`\`
 
-Include your top 10 results sorted by fit_score descending. ONLY new jobs (not in the exclusion list above).`
+Include your top 10 results sorted by fit_score descending. ONLY new jobs (not in the exclusion list above). VERIFY EVERY URL WORKS.`
 
     const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userPrompt }]
     let finalText = ''
