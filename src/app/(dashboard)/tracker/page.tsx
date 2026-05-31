@@ -185,6 +185,7 @@ export default function TrackerPage() {
           loading={agentLoading}
           error={agentError}
           onRunSearch={handleRunAgentSearch}
+          onJobSaved={fetchApplications}
         />
       </div>
     </div>

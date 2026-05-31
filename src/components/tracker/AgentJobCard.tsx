@@ -1,11 +1,14 @@
 'use client'
 
-import { ExternalLink } from 'lucide-react'
+import { useState } from 'react'
+import { ExternalLink, Plus, Check } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import type { AgentJobResult } from '@/types/jobs'
 
 interface Props {
   job: AgentJobResult
   index: number
+  onSaved?: () => void
 }
 
 function fitScoreBadge(score: number): string {
@@ -26,9 +29,41 @@ function priorityDot(priority: string): string {
   return 'bg-muted'
 }
 
-export default function AgentJobCard({ job, index }: Props) {
+export default function AgentJobCard({ job, index, onSaved }: Props) {
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const sponsor = sponsorshipBadge(job.sponsorship_status)
   const locationText = job.remote ? 'Remote' : job.location
+
+  async function handleSaveToTracker() {
+    setSaving(true)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      await supabase.from('job_applications').insert({
+        user_id: user.id,
+        company: job.company,
+        title: job.title,
+        location: job.location,
+        url: job.url,
+        source: job.source,
+        status: 'applied',
+        fit_score: job.fit_score,
+        sponsorship: job.sponsorship_status,
+        description: job.fit_summary,
+      })
+
+      setSaved(true)
+      onSaved?.()
+      setTimeout(() => setSaved(false), 2000)
+    } catch (error) {
+      console.error('Failed to save job:', error)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div
@@ -72,8 +107,8 @@ export default function AgentJobCard({ job, index }: Props) {
         ))}
       </ul>
 
-      {/* Apply link */}
-      <div className="flex justify-end">
+      {/* Action buttons */}
+      <div className="flex justify-between items-center gap-2">
         <a
           href={job.url}
           target="_blank"
@@ -83,6 +118,27 @@ export default function AgentJobCard({ job, index }: Props) {
           Apply
           <ExternalLink size={10} />
         </a>
+        <button
+          onClick={handleSaveToTracker}
+          disabled={saving || saved}
+          className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
+            saved
+              ? 'bg-green/20 text-green'
+              : 'bg-accent/20 text-accent hover:bg-accent/30'
+          } disabled:opacity-50`}
+        >
+          {saved ? (
+            <>
+              <Check size={12} />
+              Saved
+            </>
+          ) : (
+            <>
+              <Plus size={12} />
+              Save
+            </>
+          )}
+        </button>
       </div>
     </div>
   )

@@ -10,6 +10,7 @@ interface Props {
   loading: boolean
   error: string | null
   onRunSearch: () => void | Promise<void>
+  onJobSaved?: () => void
 }
 
 export default function AgentSearchPanel({
@@ -17,6 +18,7 @@ export default function AgentSearchPanel({
   loading,
   error,
   onRunSearch,
+  onJobSaved,
 }: Props) {
   // State 1: Idle/Empty
   if (!result && !loading && !error) {
@@ -106,7 +108,7 @@ export default function AgentSearchPanel({
         {/* Results List */}
         <div className="divide-y divide-border/50">
           {topResults.map((job, index) => (
-            <AgentJobCard key={job.id} job={job} index={index} />
+            <AgentJobCard key={job.id} job={job} index={index} onSaved={onJobSaved} />
           ))}
         </div>
       </div>
