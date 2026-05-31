@@ -23,9 +23,7 @@ export default function DigestPanel({ label, type, digests }: DigestPanelProps) 
   const [openIndex, setOpenIndex] = useState<number>(digests.length > 0 ? 0 : -1)
   const [deletedIds, setDeletedIds] = useState<string[]>([])
 
-  const accentClass = type === 'email' ? 'text-accent' : 'text-green'
-  const accentBg = type === 'email' ? 'bg-amber-50/30' : 'bg-green-50/30'
-  const accentBorder = type === 'email' ? 'border-accent/20' : 'border-green/20'
+  const accentClass = type === 'email' ? 'text-accent' : 'text-accent-2'
   const labelText = type === 'email' ? 'Email' : 'News + Drafts'
 
   const visible = digests.filter((d) => !deletedIds.includes(d.id))
@@ -55,19 +53,17 @@ export default function DigestPanel({ label, type, digests }: DigestPanelProps) 
       </div>
 
       {visible.length === 0 ? (
-        <div className={`rounded-lg border ${accentBorder} ${accentBg} p-4`}>
+        <div className="panel p-5">
           <p className="font-mono text-xs text-muted leading-relaxed">
-            No digests yet<br />
-            routines run at 08:00 &amp; 16:00 ET
+            No digests yet<br />routines run at 10:00 &amp; 17:00 ET
           </p>
         </div>
       ) : (
-        <div className={`rounded-lg border ${accentBorder} ${accentBg} overflow-hidden backdrop-blur-sm`}>
-          <div className="divide-y divide-border/50">
+        <div className="panel overflow-hidden"><div className="divide-y divide-glass-border">
             {visible.map((d, i) => (
               <div
                 key={d.id}
-                className="transition-colors hover:bg-surface-2/20 group"
+                className="transition-colors hover:bg-white/[0.03] group"
               >
                 <DigestEntry
                   slot={d.slot}
@@ -81,8 +77,7 @@ export default function DigestPanel({ label, type, digests }: DigestPanelProps) 
                 />
               </div>
             ))}
-          </div>
-        </div>
+          </div></div>
       )}
     </div>
   )
