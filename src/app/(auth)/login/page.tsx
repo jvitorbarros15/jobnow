@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/auth-helpers-nextjs'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,6 +28,7 @@ export default function LoginPage() {
       setError(null)
       const { error } = await getSupabaseClient().auth.signInWithPassword({ email, password })
       if (error) throw error
+      router.push('/tracker')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in')
       setIsLoading(false)

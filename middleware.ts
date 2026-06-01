@@ -22,12 +22,12 @@ export async function middleware(req: NextRequest) {
   )
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   const protectedRoutes = ['/tracker', '/posts', '/jobs', '/onboarding']
 
-  if (!session && protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
+  if (!user && protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
