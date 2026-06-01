@@ -9,7 +9,6 @@ interface Props {
   result: AgentSearchResult | null
   loading: boolean
   error: string | null
-  onRunSearch: () => void | Promise<void>
   onJobSaved?: () => void
 }
 
@@ -17,7 +16,6 @@ export default function AgentSearchPanel({
   result,
   loading,
   error,
-  onRunSearch,
   onJobSaved,
 }: Props) {
   // State 1: Idle/Empty
@@ -27,17 +25,15 @@ export default function AgentSearchPanel({
         <div className="flex flex-col items-center justify-center py-8 text-center gap-4">
           <div>
             <h3 className="text-sm font-medium mb-2">No searches yet</h3>
-            <p className="text-xs text-muted">
+            <p className="text-xs text-muted mb-4">
               Discover AI-ranked job opportunities matched to your profile
             </p>
           </div>
-          <button
-            onClick={onRunSearch}
-            disabled={loading}
-            className="bg-accent text-white px-4 py-2 rounded text-sm font-semibold hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Run Search
-          </button>
+          <div className="bg-surface-2/50 border border-border rounded px-3 py-3 w-full max-w-sm text-left">
+            <p className="text-[11px] font-mono text-muted/80 mb-1">To run a fresh job search:</p>
+            <p className="text-[11px] font-mono text-accent">$ claude</p>
+            <p className="text-[11px] font-mono text-muted/60 mt-2">Then ask Claude to run the job-search-agent</p>
+          </div>
         </div>
       </div>
     )
@@ -86,13 +82,7 @@ export default function AgentSearchPanel({
           <span className="text-[10px] uppercase tracking-[0.15em] text-muted">
             AI Job Picks
           </span>
-          <button
-            onClick={onRunSearch}
-            disabled={loading}
-            className="bg-accent text-white px-3 py-1 rounded text-xs font-semibold hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Run Search
-          </button>
+          <span className="text-[10px] text-muted/60 font-mono">Run again: <span className="text-accent">claude</span></span>
         </div>
 
         {/* Metadata Row */}
