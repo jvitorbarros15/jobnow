@@ -21,11 +21,7 @@ export default async function DashboardLayout({
     throw new Error('Failed to load profile')
   }
 
-  if (!profile) {
-    redirect('/onboarding')
-  }
-
-  const gmailConnected = !!profile.gmail_refresh_token
+  const gmailConnected = !!(profile?.gmail_refresh_token)
 
   return (
     <div className="min-h-screen bg-background">

@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const protectedRoutes = ['/tracker', '/posts', '/jobs', '/onboarding']
+  const protectedRoutes = ['/tracker', '/posts', '/jobs']
 
   if (!user && protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
     return NextResponse.redirect(new URL('/login', req.url))
@@ -35,5 +35,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/tracker/:path*', '/posts/:path*', '/jobs/:path*', '/onboarding/:path*', '/api/:path*']
+  matcher: ['/tracker/:path*', '/posts/:path*', '/jobs/:path*', '/api/:path*']
 }

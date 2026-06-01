@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     }
 
     if (!profile) {
-      return NextResponse.redirect(new URL('/onboarding', requestUrl))
+      return NextResponse.redirect(new URL('/home', requestUrl))
     }
 
     return NextResponse.redirect(new URL('/tracker', requestUrl))

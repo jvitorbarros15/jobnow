@@ -28,7 +28,7 @@ export default function LoginPage() {
       setError(null)
       const { error } = await getSupabaseClient().auth.signInWithPassword({ email, password })
       if (error) throw error
-      router.push('/tracker')
+      router.push('/home')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in')
       setIsLoading(false)
