@@ -7,6 +7,10 @@ export default async function HomePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - 5)
+  supabase.from('digests').delete().eq('user_id', user.id).lt('date', cutoff.toISOString().split('T')[0])
+
   const [{ data: emailDigests }, { data: newsDigests }, { data: applications }] = await Promise.all([
     supabase
       .from('digests')
