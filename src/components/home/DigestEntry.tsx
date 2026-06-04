@@ -42,9 +42,9 @@ export default function DigestEntry({
           <button
             onClick={onDelete}
             aria-label="Delete digest"
-            className="text-muted hover:text-red transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-red-400 rounded-sm p-0.5 cursor-pointer"
+            className="text-red-400/50 hover:text-red-500 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-red-400 rounded-sm p-1 cursor-pointer"
           >
-            <Trash2 size={13} strokeWidth={2} />
+            <Trash2 size={18} strokeWidth={2} />
           </button>
           <button
             onClick={onToggle}

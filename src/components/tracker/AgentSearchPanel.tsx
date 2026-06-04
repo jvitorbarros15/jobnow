@@ -9,6 +9,7 @@ interface Props {
   result: AgentSearchResult | null
   loading: boolean
   error: string | null
+  onRunSearch: () => void
   onJobSaved?: () => void
 }
 
@@ -16,6 +17,7 @@ export default function AgentSearchPanel({
   result,
   loading,
   error,
+  onRunSearch,
   onJobSaved,
 }: Props) {
   // State 1: Idle/Empty

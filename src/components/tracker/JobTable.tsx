@@ -125,9 +125,9 @@ export default function JobTable({ applications, onDelete }: JobTableProps) {
                   )}
                   <button
                     onClick={() => handleDeleteClick(app.id)}
-                    className={`transition-colors cursor-pointer ${confirmDelete === app.id ? 'text-red' : 'text-muted hover:text-red'}`}
+                    className={`transition-colors cursor-pointer p-1 rounded ${confirmDelete === app.id ? 'text-red-500' : 'text-red-400/50 hover:text-red-500'}`}
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </td>

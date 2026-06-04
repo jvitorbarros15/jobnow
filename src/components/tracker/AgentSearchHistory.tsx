@@ -228,13 +228,13 @@ export default function AgentSearchHistory() {
                         </div>
 
                         {/* Delete button - outside main div */}
-                        <div className="flex justify-end mt-2 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                        <div className="flex justify-end mt-2 opacity-100 sm:opacity-0 sm:group-hover/item:opacity-100 transition-opacity duration-200">
                           <button
                             onClick={() => handleDelete(search.id)}
                             disabled={deleting === search.id}
-                            className="text-muted/40 hover:text-red transition-all duration-200 flex-shrink-0 p-1.5 hover:bg-red/10 rounded cursor-pointer disabled:opacity-50"
+                            className="text-red-400/50 hover:text-red-500 transition-all duration-200 flex-shrink-0 p-1.5 hover:bg-red-500/10 rounded cursor-pointer disabled:opacity-50"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={18} />
                           </button>
                         </div>
 
