@@ -87,19 +87,26 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
-    const { articles, topic } = body as { articles: NewsArticle[]; topic: string }
+    const { articles, topic, customContent } = body as { articles?: NewsArticle[]; topic: string; customContent?: string }
 
-    if (!articles || !topic) {
+    if (!topic || (!articles && !customContent)) {
       return NextResponse.json(
-        { error: 'Missing articles or topic' },
+        { error: 'Missing topic and content' },
         { status: 400 }
       )
     }
 
-    const userMessage = `Topic: ${topic}
+    const userMessage = customContent
+      ? `Topic: ${topic}
+
+Custom content provided by the user:
+${customContent}
+
+Generate three LinkedIn post variants based on this content.`
+      : `Topic: ${topic}
 
 Articles:
-${articles
+${(articles ?? [])
   .map(
     (a, i) =>
       `${i + 1}. ${a.title}\n   ${a.url}${a.snippet ? '\n   ' + a.snippet : ''}`
@@ -152,7 +159,8 @@ Generate three LinkedIn post variants about this topic using the articles above.
       .insert({
         user_id: user.id,
         topic,
-        source_articles: articles,
+        topic_preset: customContent ? 'custom' : undefined,
+        source_articles: articles ?? [],
         variants,
         selected_variant: null,
         final_content: null,

@@ -11,10 +11,12 @@ import type { NewsArticle, PostVariant, PostDraft } from '@/types/posts'
 const TOPICS = ['AI / LLMs', 'Blockchain / Web3', 'Onchain AI', 'Startup / Founder', 'Developer Tools']
 
 export default function PostsPage() {
+  const [mode, setMode] = useState<'news' | 'custom'>('custom')
   const [topic, setTopic] = useState(TOPICS[0])
   const [articles, setArticles] = useState<NewsArticle[]>([])
   const [loadingNews, setLoadingNews] = useState(false)
   const [newsError, setNewsError] = useState<string | null>(null)
+  const [customContent, setCustomContent] = useState('')
   const [drafting, setDrafting] = useState(false)
   const [draftError, setDraftError] = useState<string | null>(null)
   const [currentDraft, setCurrentDraft] = useState<{ id: string; variants: PostVariant[] } | null>(null)
@@ -38,14 +40,18 @@ export default function PostsPage() {
   }, [fetchNews])
 
   const handleGeneratePost = async () => {
-    if (articles.length === 0) return
+    if (mode === 'news' && articles.length === 0) return
+    if (mode === 'custom' && !customContent.trim()) return
     setDrafting(true)
     setDraftError(null)
     try {
+      const body = mode === 'custom'
+        ? { customContent: customContent.trim(), topic: 'Custom' }
+        : { articles, topic }
       const res = await fetch('/api/news/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ articles, topic }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (!res.ok) { setDraftError(data.error || 'Failed to generate post'); return }
@@ -54,14 +60,19 @@ export default function PostsPage() {
   }
 
   const handleRegenerate = async () => {
-    if (!currentDraft || articles.length === 0) return
+    if (!currentDraft) return
+    if (mode === 'news' && articles.length === 0) return
+    if (mode === 'custom' && !customContent.trim()) return
     setDrafting(true)
     setDraftError(null)
     try {
+      const body = mode === 'custom'
+        ? { customContent: customContent.trim(), topic: 'Custom' }
+        : { articles, topic }
       const res = await fetch('/api/news/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ articles, topic }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (!res.ok) { setDraftError(data.error || 'Failed'); return }
@@ -75,49 +86,81 @@ export default function PostsPage() {
         <h1 className="font-display text-2xl font-bold text-text tracking-tight">LinkedIn Posts</h1>
       </div>
 
-      <TopicSelector topics={TOPICS} selectedTopic={topic} onSelect={handleSelectTopic} />
+      {/* Mode toggle */}
+      <div className="flex gap-0 border-b border-border">
+        {([['custom', 'Custom Content'], ['news', 'News Feed']] as const).map(([m, label]) => (
+          <button
+            key={m}
+            onClick={() => setMode(m)}
+            className={`px-4 py-2.5 text-xs font-sans font-medium whitespace-nowrap transition-all border-b-2 -mb-px ${
+              mode === m ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-text'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {mode === 'news' && (
+        <TopicSelector topics={TOPICS} selectedTopic={topic} onSelect={handleSelectTopic} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        {/* News feed */}
+        {/* Left panel */}
         <div className="lg:col-span-2 space-y-0">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[10px] font-sans uppercase tracking-[0.15em] text-muted">Latest</p>
-            <button
-              onClick={() => fetchNews(topic, true)}
-              disabled={loadingNews}
-              className="text-[10px] font-sans uppercase tracking-[0.1em] text-muted hover:text-accent transition-colors disabled:opacity-40"
-            >
-              {loadingNews ? 'Refreshing…' : 'Refresh'}
-            </button>
-          </div>
-
-          {newsError && (
-            <div className="border border-red/30 p-3 mb-4 rounded">
-              <span className="text-xs font-sans text-red">{newsError}</span>
-            </div>
-          )}
-
-          {loadingNews && articles.length === 0 ? (
-            <div className="space-y-0">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 border-b border-border animate-pulse bg-surface/30" />
-              ))}
+          {mode === 'custom' ? (
+            <div className="space-y-4">
+              <p className="text-[10px] font-sans uppercase tracking-[0.15em] text-muted">Paste articles, links, or thoughts</p>
+              <textarea
+                value={customContent}
+                onChange={(e) => setCustomContent(e.target.value)}
+                rows={16}
+                placeholder={"Paste anything — article text, a URL, project notes, or raw ideas you want to post about..."}
+                className="w-full px-0 py-2 bg-transparent border-b border-glass-border text-text text-sm font-sans leading-relaxed placeholder:text-muted/40 focus:outline-none focus:border-accent transition-colors resize-none"
+              />
             </div>
           ) : (
-            <div>
-              {articles.map((article) => (
-                <NewsCard key={article.url} article={article} />
-              ))}
-            </div>
-          )}
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] font-sans uppercase tracking-[0.15em] text-muted">Latest</p>
+                <button
+                  onClick={() => fetchNews(topic, true)}
+                  disabled={loadingNews}
+                  className="text-[10px] font-sans uppercase tracking-[0.1em] text-muted hover:text-accent transition-colors disabled:opacity-40"
+                >
+                  {loadingNews ? 'Refreshing…' : 'Refresh'}
+                </button>
+              </div>
 
-          {!loadingNews && articles.length === 0 && !newsError && (
-            <p className="text-xs font-sans text-muted py-8 text-center">Select a topic to load news</p>
+              {newsError && (
+                <div className="border border-red/30 p-3 mb-4 rounded">
+                  <span className="text-xs font-sans text-red">{newsError}</span>
+                </div>
+              )}
+
+              {loadingNews && articles.length === 0 ? (
+                <div className="space-y-0">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-16 border-b border-border animate-pulse bg-surface/30" />
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  {articles.map((article) => (
+                    <NewsCard key={article.url} article={article} />
+                  ))}
+                </div>
+              )}
+
+              {!loadingNews && articles.length === 0 && !newsError && (
+                <p className="text-xs font-sans text-muted py-8 text-center">Select a topic to load news</p>
+              )}
+            </>
           )}
 
           <button
             onClick={handleGeneratePost}
-            disabled={loadingNews || drafting || articles.length === 0}
+            disabled={drafting || (mode === 'news' ? loadingNews || articles.length === 0 : !customContent.trim())}
             className="btn-primary w-full mt-6 py-3 text-sm"
           >
             {drafting ? <><Loader2 size={15} className="animate-spin" /> Generating…</> : <><Zap size={15} /> Generate Post</>}
