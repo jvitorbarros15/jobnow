@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, FileText, ChevronDown, ChevronRight } from 'lucide-react'
+import { Loader2, FileText, ChevronDown, ChevronRight, Sparkles } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import KeywordScore from './KeywordScore'
 import LatexOutput from './LatexOutput'
@@ -20,6 +20,7 @@ interface ResumeResult {
 interface ResumeBuilderProps {
   job: JobResult | null
   onGenerate: (template: ResumeTemplate) => void
+  onRequestGenerate: (template: ResumeTemplate) => void
   loading: boolean
   result: ResumeResult | null
 }
@@ -31,7 +32,7 @@ const TEMPLATES: { value: ResumeTemplate; label: string; sub: string }[] = [
   { value: 'blockchain_web3', label: 'Blockchain / Web3', sub: 'Crypto, L2' },
 ]
 
-export default function ResumeBuilder({ job, onGenerate, loading, result }: ResumeBuilderProps) {
+export default function ResumeBuilder({ job, onGenerate, onRequestGenerate, loading, result }: ResumeBuilderProps) {
   const [template, setTemplate] = useState<ResumeTemplate>('classic_ats')
   const [savedResumes, setSavedResumes] = useState<Resume[]>([])
   const [historyOpen, setHistoryOpen] = useState(false)
@@ -75,18 +76,32 @@ export default function ResumeBuilder({ job, onGenerate, loading, result }: Resu
         </div>
       </div>
 
-      <button
-        onClick={() => onGenerate(template)}
-        disabled={!job || loading}
-        className="btn-primary w-full py-3 text-sm"
-      >
-        {loading ? <><Loader2 size={15} className="animate-spin" /> Generating…</> : <><FileText size={15} /> Generate Resume</>}
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => onRequestGenerate(template)}
+          disabled={!job || loading}
+          className="btn-primary flex-1 py-3 text-sm"
+        >
+          {loading ? <><Loader2 size={15} className="animate-spin" /> Saving…</> : <><Sparkles size={15} /> Generate Resume (Agent)</>}
+        </button>
+        <button
+          onClick={() => onGenerate(template)}
+          disabled={!job || loading}
+          className="btn-ghost px-4 py-3 text-sm"
+          title="Rule-based (fast)"
+        >
+          <FileText size={15} />
+        </button>
+      </div>
 
       {result && (
         <div className="space-y-6 pt-4 border-t border-border">
           <KeywordScore score={result.keyword_match_score} matched={result.matched_keywords} missing={result.missing_skills} />
-          <LatexOutput latex={result.latex_code} onCopy={() => {}} />
+          <LatexOutput
+            latex={result.latex_code}
+            onCopy={() => {}}
+            jobMeta={job ? { title: job.title, company: job.company, description: job.description } : undefined}
+          />
         </div>
       )}
 

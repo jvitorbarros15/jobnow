@@ -139,6 +139,26 @@ export default function JobsPage() {
     } finally { setGeneratingResume(false) }
   }
 
+  async function handleSearchRequestGenerate(template: ResumeTemplate) {
+    if (!selectedJob) return
+    setRequestLoading(true)
+    setRequestJobMeta({ title: selectedJob.title, company: selectedJob.company, description: selectedJob.description })
+    try {
+      const res = await fetch('/api/jobs/resume-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          job_title: selectedJob.title,
+          company: selectedJob.company,
+          job_description: selectedJob.description,
+          template,
+        }),
+      })
+      const data = await res.json()
+      if (data.request) setRequestId(data.request.id)
+    } catch (e) { console.error(e) } finally { setRequestLoading(false) }
+  }
+
   const displayedJobs = activeTab === 'results' ? searchResults : savedJobs
 
   return (
@@ -333,7 +353,21 @@ export default function JobsPage() {
               )}
             </div>
             <div className="lg:col-span-2">
-              <ResumeBuilder job={selectedJob} onGenerate={handleGenerate} loading={generatingResume} result={resumeResult} />
+              {requestId ? (
+                <ResumePipelineStatus
+                  requestId={requestId}
+                  jobMeta={requestJobMeta}
+                  onReset={() => { setRequestId(null); setRequestJobMeta(null) }}
+                />
+              ) : (
+                <ResumeBuilder
+                  job={selectedJob}
+                  onGenerate={handleGenerate}
+                  onRequestGenerate={handleSearchRequestGenerate}
+                  loading={generatingResume || requestLoading}
+                  result={resumeResult}
+                />
+              )}
             </div>
           </div>
         </>
