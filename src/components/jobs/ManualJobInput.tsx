@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, FileText, Link } from 'lucide-react'
+import { Loader2, FileText, Link, Sparkles } from 'lucide-react'
 import type { ResumeTemplate } from '@/types/jobs'
 
 interface ManualJobInputProps {
   onGenerate: (company: string, title: string, description: string, template: string) => void
+  onRequestGenerate: (company: string, title: string, description: string, template: string) => void
   loading: boolean
 }
 
@@ -16,7 +17,7 @@ const TEMPLATES: { value: ResumeTemplate; label: string; sub: string }[] = [
   { value: 'blockchain_web3', label: 'Blockchain / Web3', sub: 'Crypto, L2, protocol' },
 ]
 
-export default function ManualJobInput({ onGenerate, loading }: ManualJobInputProps) {
+export default function ManualJobInput({ onGenerate, onRequestGenerate, loading }: ManualJobInputProps) {
   const [company, setCompany] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -125,17 +126,27 @@ export default function ManualJobInput({ onGenerate, loading }: ManualJobInputPr
         </div>
       </div>
 
-      <button
-        onClick={() => onGenerate(company.trim(), title.trim(), description.trim(), template)}
-        disabled={!canSubmit}
-        className="btn-primary w-full py-3 text-sm"
-      >
-        {loading ? (
-          <><Loader2 size={15} className="animate-spin" /> Generating resume…</>
-        ) : (
-          <><FileText size={15} /> Generate Resume</>
-        )}
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => onRequestGenerate(company.trim(), title.trim(), description.trim(), template)}
+          disabled={!canSubmit}
+          className="btn-primary flex-1 py-3 text-sm"
+        >
+          {loading ? (
+            <><Loader2 size={15} className="animate-spin" /> Saving request…</>
+          ) : (
+            <><Sparkles size={15} /> Generate Resume (Agent)</>
+          )}
+        </button>
+        <button
+          onClick={() => onGenerate(company.trim(), title.trim(), description.trim(), template)}
+          disabled={!canSubmit}
+          className="btn-ghost px-4 py-3 text-sm"
+          title="Rule-based (fast, no AI)"
+        >
+          <FileText size={15} />
+        </button>
+      </div>
     </div>
   )
 }

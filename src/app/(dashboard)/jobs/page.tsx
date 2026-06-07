@@ -10,6 +10,7 @@ import ResumeBuilder from '@/components/jobs/ResumeBuilder'
 import ManualJobInput from '@/components/jobs/ManualJobInput'
 import KeywordScore from '@/components/jobs/KeywordScore'
 import LatexOutput from '@/components/jobs/LatexOutput'
+import ResumePipelineStatus from '@/components/jobs/ResumePipelineStatus'
 import type { JobResult, ResumeTemplate } from '@/types/jobs'
 
 interface ResumeResult {
@@ -58,6 +59,10 @@ export default function JobsPage() {
   const [manualMode, setManualMode] = useState(true)
   const [manualResumeResult, setManualResumeResult] = useState<ResumeResult | null>(null)
   const [manualLoading, setManualLoading] = useState(false)
+  const [manualJobMeta, setManualJobMeta] = useState<{ title: string; company: string; description: string } | null>(null)
+  const [requestId, setRequestId] = useState<string | null>(null)
+  const [requestJobMeta, setRequestJobMeta] = useState<{ title: string; company: string; description: string } | null>(null)
+  const [requestLoading, setRequestLoading] = useState(false)
 
   async function handleSearch(query: string, location: string, remote: boolean) {
     setSearching(true)
@@ -93,6 +98,7 @@ export default function JobsPage() {
 
   async function handleManualGenerate(company: string, title: string, description: string, template: string) {
     setManualLoading(true)
+    setManualJobMeta({ title, company, description })
     try {
       const res = await fetch('/api/jobs/resume', {
         method: 'POST',
@@ -102,6 +108,20 @@ export default function JobsPage() {
       const data = await res.json()
       setManualResumeResult(data)
     } catch (e) { console.error(e) } finally { setManualLoading(false) }
+  }
+
+  async function handleRequestGenerate(company: string, title: string, description: string, template: string) {
+    setRequestLoading(true)
+    setRequestJobMeta({ title, company, description })
+    try {
+      const res = await fetch('/api/jobs/resume-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ job_title: title, company, job_description: description, template }),
+      })
+      const data = await res.json()
+      if (data.request) setRequestId(data.request.id)
+    } catch (e) { console.error(e) } finally { setRequestLoading(false) }
   }
 
   async function handleGenerate(template: ResumeTemplate) {
@@ -147,29 +167,47 @@ export default function JobsPage() {
       {manualMode ? (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3">
-            <ManualJobInput onGenerate={handleManualGenerate} loading={manualLoading} />
+            <ManualJobInput
+              onGenerate={handleManualGenerate}
+              onRequestGenerate={handleRequestGenerate}
+              loading={manualLoading || requestLoading}
+            />
           </div>
           <div className="lg:col-span-2 space-y-4">
-            {manualResumeResult?.visa_warning && (
-              <div className="border border-red/30 p-4 flex gap-3">
-                <AlertTriangle size={15} className="text-red flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-sans font-semibold text-red">Visa sponsorship likely not available</p>
-                  {manualResumeResult.visa_warning_reason && (
-                    <p className="text-xs font-sans text-muted mt-1">{manualResumeResult.visa_warning_reason}</p>
-                  )}
-                </div>
-              </div>
-            )}
-            {manualResumeResult && (
-              <div className="space-y-6">
-                <KeywordScore
-                  score={manualResumeResult.keyword_match_score}
-                  matched={manualResumeResult.matched_keywords}
-                  missing={manualResumeResult.missing_skills}
-                />
-                <LatexOutput latex={manualResumeResult.latex_code} onCopy={() => {}} />
-              </div>
+            {requestId ? (
+              <ResumePipelineStatus
+                requestId={requestId}
+                jobMeta={requestJobMeta}
+                onReset={() => { setRequestId(null); setRequestJobMeta(null) }}
+              />
+            ) : (
+              <>
+                {manualResumeResult?.visa_warning && (
+                  <div className="border border-red/30 p-4 flex gap-3">
+                    <AlertTriangle size={15} className="text-red flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-sans font-semibold text-red">Visa sponsorship likely not available</p>
+                      {manualResumeResult.visa_warning_reason && (
+                        <p className="text-xs font-sans text-muted mt-1">{manualResumeResult.visa_warning_reason}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {manualResumeResult && (
+                  <div className="space-y-6">
+                    <KeywordScore
+                      score={manualResumeResult.keyword_match_score}
+                      matched={manualResumeResult.matched_keywords}
+                      missing={manualResumeResult.missing_skills}
+                    />
+                    <LatexOutput
+                      latex={manualResumeResult.latex_code}
+                      onCopy={() => {}}
+                      jobMeta={manualJobMeta ?? undefined}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
