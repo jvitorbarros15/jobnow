@@ -44,6 +44,10 @@ export interface Resume {
   keyword_match_score: number | null
   ats_keywords_matched: string[]
   missing_skills: string[]
+  review_score: number | null
+  review_keywords: string[]
+  review_red_flags: Array<{ flag: string; cost: string }>
+  reviewed_latex: string | null
   created_at: string
 }
 
@@ -70,4 +74,18 @@ export interface AgentSearchResult {
   sources_searched: number
   created_at: string
   completed_at: string | null
+}
+
+export interface ResumeRequest {
+  id: string
+  user_id: string
+  job_title: string
+  company: string
+  job_description: string
+  template: string
+  status: 'pending' | 'building' | 'reviewing' | 'complete' | 'failed'
+  resume_id: string | null
+  error_message: string | null
+  created_at: string
+  updated_at: string
 }
