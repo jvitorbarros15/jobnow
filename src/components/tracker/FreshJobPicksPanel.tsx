@@ -34,16 +34,12 @@ export default function FreshJobPicksPanel() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-
       const { data } = await supabase
         .from('agent_job_searches')
         .select('*')
         .eq('user_id', user.id)
         .eq('source', 'scheduled_routine')
         .eq('status', 'complete')
-        .gte('created_at', today.toISOString())
         .order('created_at', { ascending: false })
         .limit(1)
         .single()
@@ -108,7 +104,7 @@ export default function FreshJobPicksPanel() {
       </div>
 
       <div className="text-[10px] font-mono text-muted/60 mb-3">
-        {topJobs.length} picks · {search.sources_searched} sources searched
+        {topJobs.length} picks · {search.sources_searched} sources searched · {new Date(search.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
       </div>
 
       {search.summary && (
