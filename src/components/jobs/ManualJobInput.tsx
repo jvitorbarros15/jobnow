@@ -5,8 +5,8 @@ import { Loader2, FileText, Link, Sparkles } from 'lucide-react'
 import type { ResumeTemplate } from '@/types/jobs'
 
 interface ManualJobInputProps {
-  onGenerate: (company: string, title: string, description: string, template: string) => void
-  onRequestGenerate: (company: string, title: string, description: string, template: string) => void
+  onGenerate: (company: string, title: string, description: string, template: ResumeTemplate) => void
+  onRequestGenerate: (company: string, title: string, description: string, template: ResumeTemplate) => void
   loading: boolean
 }
 

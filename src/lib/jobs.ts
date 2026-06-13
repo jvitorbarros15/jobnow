@@ -105,13 +105,13 @@ const TECH_VOCAB = [
   'TensorFlow', 'PyTorch', 'Scikit-learn', 'XGBoost', 'LangChain', 'OpenAI', 'LLM', 'LLMs',
   'Pandas', 'NumPy', 'Matplotlib', 'Hugging Face', 'RAG', 'NLP', 'Spark', 'Airflow', 'dbt',
   'machine learning', 'deep learning', 'computer vision', 'MLOps', 'data science',
-  'Solidity', 'Web3.js', 'Ethereum', 'EVM', 'IPFS', 'DeFi', 'smart contracts', 'blockchain',
+  'Web3.js', 'Ethereum', 'EVM', 'IPFS', 'DeFi', 'smart contracts', 'blockchain',
   'Hardhat', 'Foundry', 'Solana', 'Polygon', 'Layer 2',
   'Tailwind CSS', 'GraphQL', 'REST API', 'WebSocket', 'React Native', 'Flutter',
   'shadcn/ui', 'Material UI',
   'Git', 'GitHub', 'Jira', 'Swagger', 'OpenAPI', 'gRPC', 'Kafka', 'RabbitMQ',
   'microservices', 'REST', 'API', 'DevOps', 'Agile', 'Scrum', 'Docker Compose',
-  'SQLAlchemy', 'Prisma', 'Redis', 'Celery', 'Nginx', 'Linux',
+  'SQLAlchemy', 'Prisma', 'Celery', 'Nginx', 'Linux',
 ]
 
 export async function extractAtsKeywords(description: string): Promise<string[]> {

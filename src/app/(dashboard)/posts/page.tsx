@@ -24,8 +24,8 @@ export default function PostsPage() {
   // News Feed state
   const [digests, setDigests] = useState<NewsDigest[]>([])
   const [loadingDigests, setLoadingDigests] = useState(false)
-  const [selectedDigest, setSelectedDigest] = useState<NewsDigest | null>(null)
   const [openDigestId, setOpenDigestId] = useState<string | null>(null)
+  const selectedDigest = openDigestId ? digests.find((d) => d.id === openDigestId) ?? null : null
 
   // Custom Content state
   const [customContent, setCustomContent] = useState('')
@@ -64,6 +64,7 @@ export default function PostsPage() {
   const canGenerate = mode === 'custom' ? !!customContent.trim() : !!selectedDigest
 
   const callGenerate = async () => {
+    if (!canGenerate) return
     setDrafting(true)
     setDraftError(null)
     try {
@@ -138,7 +139,7 @@ export default function PostsPage() {
                 <div className="border border-border rounded overflow-hidden">
                   {digests.map((digest) => {
                     const isOpen = openDigestId === digest.id
-                    const isSelected = selectedDigest?.id === digest.id
+                    const isSelected = openDigestId === digest.id
                     return (
                       <div
                         key={digest.id}
@@ -147,7 +148,6 @@ export default function PostsPage() {
                         <div className="flex items-center justify-between px-3 py-2.5 group">
                           <button
                             onClick={() => {
-                              setSelectedDigest(isSelected ? null : digest)
                               setOpenDigestId(isOpen ? null : digest.id)
                             }}
                             className="flex-1 flex items-center gap-2 text-left"
@@ -173,7 +173,7 @@ export default function PostsPage() {
                             <p className="text-xs font-sans text-muted leading-6 whitespace-pre-wrap line-clamp-6">{digest.content}</p>
                             {!isSelected && (
                               <button
-                                onClick={() => setSelectedDigest(digest)}
+                                onClick={() => setOpenDigestId(digest.id)}
                                 className="mt-2 text-[10px] font-sans uppercase tracking-wider text-accent hover:text-accent/70 transition-colors"
                               >
                                 Use this digest →

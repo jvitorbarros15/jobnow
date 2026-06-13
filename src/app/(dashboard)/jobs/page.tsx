@@ -110,7 +110,7 @@ export default function JobsPage() {
     } catch (e) { console.error(e) } finally { setManualLoading(false) }
   }
 
-  async function handleRequestGenerate(company: string, title: string, description: string, template: string) {
+  async function submitResumeRequest(company: string, title: string, description: string, template: ResumeTemplate) {
     setRequestLoading(true)
     setRequestJobMeta({ title, company, description })
     try {
@@ -122,6 +122,10 @@ export default function JobsPage() {
       const data = await res.json()
       if (data.request) setRequestId(data.request.id)
     } catch (e) { console.error(e) } finally { setRequestLoading(false) }
+  }
+
+  async function handleRequestGenerate(company: string, title: string, description: string, template: ResumeTemplate) {
+    await submitResumeRequest(company, title, description, template)
   }
 
   async function handleGenerate(template: ResumeTemplate) {
@@ -141,22 +145,7 @@ export default function JobsPage() {
 
   async function handleSearchRequestGenerate(template: ResumeTemplate) {
     if (!selectedJob) return
-    setRequestLoading(true)
-    setRequestJobMeta({ title: selectedJob.title, company: selectedJob.company, description: selectedJob.description })
-    try {
-      const res = await fetch('/api/jobs/resume-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          job_title: selectedJob.title,
-          company: selectedJob.company,
-          job_description: selectedJob.description,
-          template,
-        }),
-      })
-      const data = await res.json()
-      if (data.request) setRequestId(data.request.id)
-    } catch (e) { console.error(e) } finally { setRequestLoading(false) }
+    await submitResumeRequest(selectedJob.company, selectedJob.title, selectedJob.description, template)
   }
 
   const displayedJobs = activeTab === 'results' ? searchResults : savedJobs

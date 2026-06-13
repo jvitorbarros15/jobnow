@@ -44,9 +44,14 @@ export default function ResumePipelineStatus({ requestId, jobMeta, onReset }: Pr
 
   async function poll() {
     if (!requestId) return
-    const res = await fetch(`/api/jobs/resume-request?id=${requestId}`)
-    const data: PollResponse = await res.json()
-    if (data.request) setReq(data.request)
+    try {
+      const res = await fetch(`/api/jobs/resume-request?id=${requestId}`)
+      if (!res.ok) return
+      const data: PollResponse = await res.json()
+      if (data.request) setReq(data.request)
+    } catch {
+      // network error or non-JSON body — interval will retry
+    }
   }
 
   if (!requestId) return null

@@ -42,8 +42,38 @@ export async function POST(request: Request) {
   try {
     const { url } = await request.json() as { url: string }
 
-    if (!url || !url.startsWith('http')) {
-      return NextResponse.json({ error: 'Valid URL required' }, { status: 400 })
+    let parsed: URL
+    try { parsed = new URL(url) } catch {
+      return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })
+    }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })
+    }
+
+    const ALLOWED_HOSTS = new Set([
+      'lever.co', 'jobs.lever.co',
+      'greenhouse.io', 'boards.greenhouse.io',
+      'linkedin.com', 'www.linkedin.com',
+      'indeed.com', 'www.indeed.com',
+      'ziprecruiter.com', 'www.ziprecruiter.com',
+      'wellfound.com', 'angel.co',
+      'workday.com', 'myworkdayjobs.com',
+      'careers.google.com', 'jobs.ashbyhq.com',
+    ])
+    const ALLOWED_SUFFIXES = [
+      '.myworkdayjobs.com',
+      '.greenhouse.io',
+      '.lever.co',
+      '.ashbyhq.com',
+    ]
+    const hostname = parsed.hostname
+    const stripped = hostname.replace(/^www\./, '')
+    if (
+      !ALLOWED_HOSTS.has(hostname) &&
+      !ALLOWED_HOSTS.has(stripped) &&
+      !ALLOWED_SUFFIXES.some((s) => hostname.endsWith(s))
+    ) {
+      return NextResponse.json({ error: 'URL host not permitted' }, { status: 400 })
     }
 
     const res = await fetch(url, {

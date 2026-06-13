@@ -272,6 +272,11 @@ export function checkVisaWarning(description: string): { visa_warning: boolean; 
     [/active\s+(secret|top\s*secret|ts\/sci)/i, 'Active security clearance required'],
     [/sponsorship\s+(is\s+)?(not|unavailable)/i, 'No sponsorship available'],
     [/we\s+(do\s+not|don'?t)\s+offer\s+(visa\s+)?sponsorship/i, 'No sponsorship offered'],
+    [/permanent\s+(work\s+)?authorization/i, 'Permanent work authorization required'],
+    [/unrestricted\s+(right\s+to\s+work|work\s+authorization)/i, 'Unrestricted work authorization required'],
+    [/us\s+nationals?\s+only/i, 'US nationals only'],
+    [/no\s+sponsorship\s+will\s+be\s+(provided|considered|available|offered)/i, 'No sponsorship considered'],
+    [/cannot\s+(support|provide|offer)\s+(work\s+)?visa/i, 'Cannot support visa'],
   ]
   for (const [pattern, reason] of patterns) {
     if (pattern.test(description)) return { visa_warning: true, reason }
