@@ -36,9 +36,19 @@ yarn-error.log*
 # claude code
 .claude/
 CLAUDE.md
+.superpowers/
+.understand-anything/
 
 # personal docs / planning
 docs/
+PRODUCT.md
+content/
+
+# test scripts / dev artifacts
+test-*.js
+test-*.mjs
+verify_*.js
+*.log
 
 # vercel
 .vercel

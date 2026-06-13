@@ -8,6 +8,7 @@ import StatsCard from '@/components/tracker/StatsCard'
 import AddApplicationForm from '@/components/tracker/AddApplicationForm'
 import AgentSearchPanel from '@/components/tracker/AgentSearchPanel'
 import AgentSearchHistory from '@/components/tracker/AgentSearchHistory'
+import FreshJobPicksPanel from '@/components/tracker/FreshJobPicksPanel'
 import type { JobApplication } from '@/types/tracker'
 import type { AgentSearchResult } from '@/types/jobs'
 
@@ -184,6 +185,7 @@ export default function TrackerPage() {
 
         {/* Right Panel: Agent Search */}
         <div className="space-y-4">
+          <FreshJobPicksPanel />
           <AgentSearchPanel
             result={agentSearch}
             loading={agentLoading}

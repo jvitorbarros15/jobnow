@@ -6,7 +6,7 @@ interface KeywordScoreProps {
   missing: string[]
 }
 
-export default function KeywordScore({ score, matched, missing }: KeywordScoreProps) {
+export default function KeywordScore({ score, matched = [], missing = [] }: KeywordScoreProps) {
   const color = score >= 70 ? 'text-green' : score >= 50 ? 'text-accent' : 'text-red'
 
   return (

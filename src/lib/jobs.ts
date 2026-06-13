@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { anthropic } from './anthropic'
 import { JobResult } from '@/types/jobs'
 
 let indeedWarned = false
@@ -94,41 +93,38 @@ async function fetchZipRecruiter(
   }
 }
 
+const TECH_VOCAB = [
+  'Python', 'JavaScript', 'TypeScript', 'Ruby', 'Go', 'Golang', 'Rust', 'Java', 'C++', 'C#',
+  'Kotlin', 'Swift', 'Scala', 'PHP', 'SQL', 'Solidity', 'R', 'Bash', 'Assembly',
+  'React', 'Next.js', 'Vue.js', 'Angular', 'Node.js', 'Express.js', 'FastAPI', 'Flask',
+  'Django', 'Ruby on Rails', 'Rails', 'Spring Boot', 'NestJS', 'Svelte', 'Nuxt.js',
+  'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'SQLite', 'Cassandra', 'DynamoDB',
+  'Elasticsearch', 'Supabase', 'Firebase', 'Neo4j', 'ClickHouse', 'Snowflake', 'BigQuery',
+  'AWS', 'GCP', 'Azure', 'Docker', 'Kubernetes', 'Terraform', 'CircleCI', 'GitHub Actions',
+  'CI/CD', 'Lambda', 'EC2', 'S3', 'Vercel', 'Heroku',
+  'TensorFlow', 'PyTorch', 'Scikit-learn', 'XGBoost', 'LangChain', 'OpenAI', 'LLM', 'LLMs',
+  'Pandas', 'NumPy', 'Matplotlib', 'Hugging Face', 'RAG', 'NLP', 'Spark', 'Airflow', 'dbt',
+  'machine learning', 'deep learning', 'computer vision', 'MLOps', 'data science',
+  'Web3.js', 'Ethereum', 'EVM', 'IPFS', 'DeFi', 'smart contracts', 'blockchain',
+  'Hardhat', 'Foundry', 'Solana', 'Polygon', 'Layer 2',
+  'Tailwind CSS', 'GraphQL', 'REST API', 'WebSocket', 'React Native', 'Flutter',
+  'shadcn/ui', 'Material UI',
+  'Git', 'GitHub', 'Jira', 'Swagger', 'OpenAPI', 'gRPC', 'Kafka', 'RabbitMQ',
+  'microservices', 'REST', 'API', 'DevOps', 'Agile', 'Scrum', 'Docker Compose',
+  'SQLAlchemy', 'Prisma', 'Celery', 'Nginx', 'Linux',
+]
+
 export async function extractAtsKeywords(description: string): Promise<string[]> {
-  if (!description || description.trim().length === 0) {
-    return []
-  }
-
-  try {
-    const truncatedDescription = description.substring(0, 2000)
-
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 256,
-      system:
-        'Extract 10-15 ATS keywords from this job description as a JSON array of strings. Return ONLY the JSON array, no explanation.',
-      messages: [
-        {
-          role: 'user',
-          content: truncatedDescription,
-        },
-      ],
-    })
-
-    const textContent = message.content.find((block) => block.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      return []
+  if (!description || !description.trim()) return []
+  const lower = description.toLowerCase()
+  const found: string[] = []
+  for (const kw of TECH_VOCAB) {
+    const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase()
+    if (new RegExp(`\\b${escaped}\\b`).test(lower) && !found.includes(kw)) {
+      found.push(kw)
     }
-
-    const parsed = JSON.parse(textContent.text)
-    if (Array.isArray(parsed)) {
-      return parsed
-    }
-    return []
-  } catch (error) {
-    console.error('Error extracting ATS keywords:', error)
-    return []
   }
+  return found.slice(0, 15)
 }
 
 export async function searchJobs(

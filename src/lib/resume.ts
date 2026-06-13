@@ -239,6 +239,273 @@ function getSupplementalSkills(
   return result
 }
 
+// ── Rule-based helpers (no API calls) ──────────────────────────────────────
+
+const CATEGORY_SIGNALS: Record<JobCategory, string[]> = {
+  blockchain_web3: ['solidity', 'smart contract', 'defi', 'evm', 'web3', 'on-chain', 'blockchain', 'crypto', 'ipfs', 'ethereum', 'polygon', 'layer 2', 'nft', 'dapp'],
+  ai_ml: ['machine learning', ' ml ', 'llm', 'deep learning', 'nlp', 'model training', 'inference', 'data science', 'pytorch', 'tensorflow', 'neural network', 'ai engineer', 'mlops', 'hugging face'],
+  backend_fullstack: ['rest api', 'microservices', 'backend', 'full-stack', 'fullstack', 'ruby on rails', 'fastapi', 'flask', 'postgresql', 'redis', 'docker', 'api development', 'server-side'],
+  frontend: ['react', 'next.js', 'frontend', 'front-end', 'component library', 'typescript', 'user interface', 'ui/ux', 'css', 'html', 'angular', 'vue'],
+  research: ['research', 'phd', 'protocol design', 'publication', 'quantum', 'cryptography', 'empirical', 'arxiv', 'paper', 'literature review'],
+  data_engineering: ['data pipeline', 'etl', 'spark', 'data warehouse', 'airflow', 'dbt', 'data engineer', 'analytics engineering', 'bigquery', 'snowflake'],
+  devops_infra: ['kubernetes', 'ci/cd', 'terraform', 'infrastructure', 'devops', 'sre', 'helm', 'k8s', 'platform engineer', 'cloud engineer'],
+  startup_generalist: ['startup', 'early-stage', 'founding engineer', 'generalist', 'seed stage', 'series a', 'scrappy', 'fast-paced startup'],
+}
+
+export function classifyJobCategory(description: string): JobCategory {
+  const lower = description.toLowerCase()
+  const scores = Object.entries(CATEGORY_SIGNALS).map(([cat, signals]) => ({
+    cat: cat as JobCategory,
+    score: signals.reduce((n, s) => n + (lower.includes(s) ? 1 : 0), 0),
+  }))
+  scores.sort((a, b) => b.score - a.score)
+  return scores[0].score > 0 ? scores[0].cat : 'backend_fullstack'
+}
+
+export function checkVisaWarning(description: string): { visa_warning: boolean; reason: string | null } {
+  const patterns: [RegExp, string][] = [
+    [/no\s+visa\s+sponsorship/i, 'No visa sponsorship'],
+    [/not\s+(able\s+to|currently)\s+sponsor/i, 'Cannot sponsor visas'],
+    [/must\s+be\s+(authorized|eligible)\s+to\s+work\s+without\s+sponsorship/i, 'Must be authorized without sponsorship'],
+    [/us\s+citizen(ship)?\s+(only|required)/i, 'US citizenship required'],
+    [/security\s+clearance\s+required/i, 'Security clearance required'],
+    [/active\s+(secret|top\s*secret|ts\/sci)/i, 'Active security clearance required'],
+    [/sponsorship\s+(is\s+)?(not|unavailable)/i, 'No sponsorship available'],
+    [/we\s+(do\s+not|don'?t)\s+offer\s+(visa\s+)?sponsorship/i, 'No sponsorship offered'],
+    [/permanent\s+(work\s+)?authorization/i, 'Permanent work authorization required'],
+    [/unrestricted\s+(right\s+to\s+work|work\s+authorization)/i, 'Unrestricted work authorization required'],
+    [/us\s+nationals?\s+only/i, 'US nationals only'],
+    [/no\s+sponsorship\s+will\s+be\s+(provided|considered|available|offered)/i, 'No sponsorship considered'],
+    [/cannot\s+(support|provide|offer)\s+(work\s+)?visa/i, 'Cannot support visa'],
+  ]
+  for (const [pattern, reason] of patterns) {
+    if (pattern.test(description)) return { visa_warning: true, reason }
+  }
+  return { visa_warning: false, reason: null }
+}
+
+// ── LaTeX assembler ─────────────────────────────────────────────────────────
+
+function esc(text: string): string {
+  return text.replace(/[%~&$#_^{}\\]/g, (c) => (({
+    '%': '\\%', '~': '\\textasciitilde{}', '&': '\\&', '$': '\\$',
+    '#': '\\#', '_': '\\_', '^': '\\textasciicircum{}',
+    '{': '\\{', '}': '\\}', '\\': '\\textbackslash{}',
+  } as Record<string, string>)[c] ?? c))
+}
+
+function fmtDate(d: string): string {
+  if (d === 'present') return 'Present'
+  const [yr, mo] = d.split('-')
+  if (!mo) return yr
+  return `${'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ')[+mo - 1]} ${yr}`
+}
+
+function fmtRange(start: string, end: string): string {
+  return `${fmtDate(start)} -- ${fmtDate(end)}`
+}
+
+function buildPreamble(): string {
+  return `%-------------------------
+% Resume — Joao Vitor Barros da Silva
+% Based on Jake Gutierrez template (MIT License)
+%------------------------
+\\documentclass[letterpaper,11pt]{article}
+\\usepackage{lmodern}
+\\usepackage{latexsym}
+\\usepackage[empty]{fullpage}
+\\usepackage{titlesec}
+\\usepackage{marvosym}
+\\usepackage[usenames,dvipsnames]{color}
+\\usepackage{verbatim}
+\\usepackage{enumitem}
+\\usepackage[hidelinks]{hyperref}
+\\usepackage{fancyhdr}
+\\usepackage[english]{babel}
+\\usepackage{tabularx}
+\\usepackage{fontawesome5}
+\\usepackage{multicol}
+\\setlength{\\multicolsep}{-3.0pt}
+\\setlength{\\columnsep}{-1pt}
+\\input{glyphtounicode}
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyfoot{}
+\\renewcommand{\\headrulewidth}{0pt}
+\\renewcommand{\\footrulewidth}{0pt}
+
+\\addtolength{\\oddsidemargin}{-0.75in}
+\\addtolength{\\evensidemargin}{-0.75in}
+\\addtolength{\\textwidth}{1.5in}
+\\addtolength{\\topmargin}{-0.9in}
+\\addtolength{\\textheight}{1.75in}
+
+\\urlstyle{same}
+\\raggedbottom
+\\raggedright
+\\setlength{\\tabcolsep}{0in}
+
+\\titleformat{\\section}{
+  \\vspace{-6pt}\\scshape\\raggedright\\large\\bfseries
+}{}{0em}{}[\\color{black}\\titlerule \\vspace{-6pt}]
+
+\\pdfgentounicode=1
+
+\\newcommand{\\resumeItem}[1]{
+  \\item\\small{{#1 \\vspace{-2pt}}}
+}
+\\newcommand{\\resumeSubheading}[4]{
+  \\vspace{-2pt}\\item
+    \\begin{tabular*}{1.0\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
+      \\textbf{#1} & \\textbf{\\small #2} \\\\
+      \\textit{\\small#3} & \\textit{\\small #4} \\\\
+    \\end{tabular*}\\vspace{-7pt}
+}
+\\newcommand{\\resumeProjectHeading}[2]{
+    \\item
+    \\begin{tabular*}{1.001\\textwidth}{l@{\\extracolsep{\\fill}}r}
+      \\small#1 & \\textbf{\\small #2}\\\\
+    \\end{tabular*}\\vspace{-7pt}
+}
+\\renewcommand\\labelitemi{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+\\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.0in, label={}]}
+\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
+\\newcommand{\\resumeItemListStart}{\\begin{itemize}}
+\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}`
+}
+
+function buildHeader(): string {
+  const p = RESUME_PROFILE.personal
+  return `\\begin{center}
+    {\\Huge \\scshape ${esc(p.name)}} \\\\ \\vspace{5pt}
+    \\small ${esc(p.phone)} ~ ${esc(p.email)} ~ \\href{https://${p.linkedin}}{${esc(p.linkedin)}} ~ \\href{https://${p.github}}{${esc(p.github)}}
+\\end{center}`
+}
+
+function buildEducation(): string {
+  const edu = RESUME_PROFILE.education[0]
+  return `\\resumeSubHeadingListStart
+  \\resumeSubheading
+    {${esc(edu.school)}}{${esc(edu.graduation)}}
+    {${esc(edu.degree)}, Minor in ${esc(edu.minor || '')}  }{}
+\\resumeSubHeadingListEnd`
+}
+
+function buildSkills(selectedSkills: string[]): string {
+  const selectedSet = new Set(selectedSkills.map(s => s.toLowerCase()))
+  const { skills } = RESUME_PROFILE
+  const groups = [
+    { label: 'Languages', s: skills.languages },
+    { label: 'Frameworks', s: skills.frameworks },
+    { label: 'ML / AI', s: skills.ml_ai },
+    { label: 'Blockchain', s: skills.blockchain },
+    { label: 'Cloud / Infra', s: skills.cloud_infra },
+    { label: 'Frontend', s: skills.frontend },
+    { label: 'Tools', s: skills.tools },
+  ]
+  const lines: string[] = []
+  for (const { label, s } of groups) {
+    const matched = s.filter(x => selectedSet.has(x.toLowerCase()))
+    if (matched.length > 0) lines.push(`\\textbf{${label}:} ${matched.map(esc).join(', ')}`)
+  }
+  return lines.join(' \\\\ \\vspace{2pt}\n')
+}
+
+function buildExperience(experience: typeof RESUME_PROFILE.experience): string {
+  const items = experience.map(exp => {
+    const bullets = exp.bullets.map(b => `    \\resumeItem{${esc(b)}}`).join('\n')
+    return `  \\resumeSubheading
+    {${esc(exp.company)}}{${fmtRange(exp.start, exp.end)}}
+    {${esc(exp.title)}}{${esc(exp.location)}}
+  \\resumeItemListStart
+${bullets}
+  \\resumeItemListEnd`
+  }).join('\n\n')
+  return `\\resumeSubHeadingListStart
+${items}
+\\resumeSubHeadingListEnd`
+}
+
+function buildProjects(projects: typeof RESUME_PROFILE.projects): string {
+  const items = projects.map(proj => {
+    const techDisplay = proj.tech.slice(0, 5).map(esc).join(', ')
+    const nameDisplay = proj.name === 'ZorAi'
+      ? `\\textbf{\\href{https://zorai.vercel.app/}{ZorAi}, AI Content Verification Platform} $|$ \\emph{${techDisplay}}`
+      : `\\textbf{${esc(proj.name)}} $|$ \\emph{${techDisplay}}`
+    const dates = proj.dates.replace(/–/g, '--').replace(/—/g, '---')
+    const bullets = proj.bullets.map(b => `    \\resumeItem{${esc(b)}}`).join('\n')
+    return `  \\resumeProjectHeading
+    {${nameDisplay}}{${dates}}
+  \\resumeItemListStart
+${bullets}
+  \\resumeItemListEnd`
+  }).join('\n\\vspace{-13pt}\n\n')
+  return `\\resumeSubHeadingListStart
+${items}
+\\resumeSubHeadingListEnd`
+}
+
+function buildPublication(): string {
+  const pub = RESUME_PROFILE.publications[0]
+  return `\\resumeSubHeadingListStart
+  \\resumeItem{\\textbf{Barros da Silva, J.V.} et al. \`\`${esc(pub.title)}.\\'\\' \\href{${pub.url}}{${esc(pub.id)}}, ${pub.year}. \\textit{(First author.)}}
+\\resumeSubHeadingListEnd`
+}
+
+function buildCertifications(): string {
+  return `\\begin{tabularx}{\\textwidth}{@{}X@{\\hspace{3em}}X@{}}
+\\textbf{\\href{https://www.coursera.org/account/accomplishments/verify/N9TRFRQ7MN8I}{AI Agents with RAG \\& LangChain}}, IBM, 2025 &
+\\textbf{\\href{https://www.coursera.org/account/accomplishments/verify/ICLX31A58IMM}{Deep Learning \\& Neural Networks}}, IBM, 2025 \\\\
+\\textbf{\\href{https://www.coursera.org/account/accomplishments/verify/F4VKG7G8L2VD}{Machine Learning with Python}}, IBM, 2025 &
+\\textbf{\\href{https://www.coursera.org/account/accomplishments/verify/JN1AOYIY9IJ3}{AI \\& Blockchain Certificate}}, Google, 2025 \\\\
+\\end{tabularx}`
+}
+
+export function generateLatexResume(
+  subset: ResumeSubset,
+  category: JobCategory,
+  _keywords: string[],
+): string {
+  const isResearch = category === 'research'
+  const expLabel = isResearch ? 'Research Experience' : 'Experience'
+  const skillsLabel = isResearch ? 'Research \\& Technical Skills' : 'Technical Skills'
+
+  const pubSection = subset.includePublications
+    ? `\n\\section{Publication}\n${buildPublication()}\n\\vspace{-4pt}\n`
+    : ''
+
+  return `${buildPreamble()}
+
+\\begin{document}
+
+${buildHeader()}
+\\vspace{-12pt}
+
+\\section{Education}
+${buildEducation()}
+\\vspace{-6pt}
+
+\\section{${skillsLabel}}
+${buildSkills(subset.skills)}
+
+\\section{${expLabel}}
+${buildExperience(subset.experience)}
+\\vspace{-15pt}
+
+\\section{Projects}
+${buildProjects(subset.projects)}
+\\vspace{-7pt}
+${pubSection}
+\\section{Certifications}
+${buildCertifications()}
+
+\\end{document}`
+}
+
+// ── Legacy template constant (kept for reference) ───────────────────────────
+
 export const LATEX_BASE_TEMPLATE = `\\documentclass[letterpaper,11pt]{article}
 \\usepackage[left=0.5in,right=0.5in,top=0.5in,bottom=0.5in]{geometry}
 \\usepackage{enumitem}
