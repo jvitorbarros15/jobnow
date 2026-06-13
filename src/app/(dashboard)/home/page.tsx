@@ -8,7 +8,7 @@ export default async function HomePage() {
   if (!user) redirect('/login')
 
   const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - 5)
+  cutoff.setDate(cutoff.getDate() - 4)
   const { error: cleanupError } = await supabase
     .from('digests')
     .delete()
