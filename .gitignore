@@ -53,6 +53,11 @@ verify_*.js
 # vercel
 .vercel
 
+# Safe templates and recruiter-facing documentation
+!.env.example
+!docs/
+!docs/preview.jpg
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

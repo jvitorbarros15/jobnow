@@ -1,25 +1,51 @@
-# JobMaker
+# JobNow
 
-AI-powered job search co-pilot. Three modules: Gmail job tracker with Google Calendar sync, LinkedIn post drafter fed by real-time tech news, and a job search engine with an AI resume builder that outputs tailored LaTeX.
+AI job-search copilot that turns scattered application work into one workflow: track recruiter email, draft professional posts, discover openings, and tailor resumes.
+
+[Live demo](https://jobnow-lime.vercel.app) · [Portfolio](https://joao-vitor-barros-da-silva-portfoli.vercel.app)
+
+![JobNow dashboard](docs/preview.jpg)
+
+## What it demonstrates
+
+- End-to-end product development with Next.js 16, React 19, TypeScript, and Supabase
+- LLM-backed classification and writing workflows using Anthropic Claude
+- Google integrations across Gmail, Calendar, and Sheets
+- Server-side aggregation of job and technology-news APIs
+- Resume generation as structured LaTeX rather than unformatted AI text
+
+## Product modules
+
+| Route | Workflow |
+| --- | --- |
+| `/tracker` | Import recruiter email, classify it, create calendar reminders, and update an application tracker |
+| `/posts` | Turn current technology news into three editable LinkedIn post drafts |
+| `/jobs` | Search openings and generate a role-specific LaTeX resume |
 
 ## Stack
 
-- **Framework:** Next.js 14 (App Router)
-- **Styling:** Tailwind CSS v4 + shadcn/ui
-- **Database:** Supabase (Postgres + Auth)
-- **AI:** Anthropic (claude-sonnet-4-5)
-- **APIs:** Gmail, Google Sheets, Google Calendar, NewsAPI, CryptoPanic, Indeed, ZipRecruiter
+- Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4
+- Supabase Postgres and authentication
+- Anthropic SDK
+- Gmail, Google Sheets, Google Calendar, NewsAPI, CryptoPanic, Indeed, and ZipRecruiter APIs
 
-## Getting started
+## Run locally
+
+Requirements: Node.js 20+ and pnpm.
 
 ```bash
 pnpm install
-cp .env.example .env.local   # fill in your keys
+cp .env.example .env.local
 pnpm dev
 ```
 
-## Modules
+Open <http://localhost:3000>. Add only the integrations you want to exercise to `.env.local`; never commit API keys or OAuth secrets.
 
-- `/tracker` — sync Gmail → classify with Claude → auto-create Calendar events → update Google Sheets
-- `/posts` — fetch tech news → generate 3 LinkedIn post variants with voice rules
-- `/jobs` — search Indeed + ZipRecruiter → generate tailored LaTeX resume via Claude
+## Production check
+
+```bash
+pnpm build
+pnpm start
+```
+
+The public deployment is a portfolio demo. External workflows require valid provider credentials and may be limited by third-party API quotas.
