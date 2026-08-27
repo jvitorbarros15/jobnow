@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       `Role: ${role}`,
       `Company: ${company}`,
       recruiter_name ? `Recruiter: ${recruiter_name}` : null,
-      'Source: JobMaker auto-detected from email',
+      'Source: JobNow auto-detected from email',
     ].filter(Boolean) as string[]
 
     const event = {

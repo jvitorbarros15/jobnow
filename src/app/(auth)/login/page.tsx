@@ -41,9 +41,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-10 h-10 border border-accent mb-4">
-            <span className="font-display text-sm font-bold text-accent">JM</span>
+            <span className="font-display text-sm font-bold text-accent">JN</span>
           </div>
-          <h1 className="text-text font-display text-lg font-bold tracking-tight">JobMaker</h1>
+          <h1 className="text-text font-display text-lg font-bold tracking-tight">JobNow</h1>
           <p className="text-muted text-sm mt-2">Your AI-powered job search co-pilot</p>
         </div>
 
